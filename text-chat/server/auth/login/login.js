@@ -1,35 +1,41 @@
-var fs = require('fs');
+const connectDB = require('../../database');
 
-module.exports = function(req, res) {
+module.exports = async function(req, res) {
     if (!req.body){
-        return res.status(400).json({"valid": false, "error": "Invalid registration"});
+        return res.status(400).json({"user": null, "valid": false, "error": "Invalid registration"});
     }
     loginAttempt = {
-        "user": req.body.user,
+        "username": req.body.username,
         "password": req.body.password
     }
-    // Will need to change code when connecting to a database
-    const usersJsonFile = fs.readFileSync(__dirname + '/../../data/users.json', 'utf-8');
-    if (usersJsonFile) {
-        const usersJson = JSON.parse(usersJsonFile);
-        const users = usersJson.users;
-        const foundUser = users.find(user => user.name == loginAttempt.user && user.password == loginAttempt.password);
+
+    try {
+        const db = await connectDB();
+        const dataDocument = await db.collection('db').findOne({});
+        const users = dataDocument ? dataDocument.users : [];
+        const foundUser = users.find(user => 
+            (user.username === loginAttempt.username || user.email === loginAttempt.username) && 
+            user.password === loginAttempt.password);
         if (foundUser) {
             const userToReturn = {
                 "id": foundUser.id,
                 "username": foundUser.username,
                 "email": foundUser.email,
+                "profilePicture": foundUser.profilePicture,
                 "roles": foundUser.roles,
                 "groups": foundUser.groups,
-                "valid": true
+                "adminGroups": foundUser.adminGroups,
+                "requests": foundUser.requests,
+                "allowedChannels": foundUser.allowedChannels,
+                "reports": foundUser.reports
             }
-            res.status(200).json(userToReturn);
+            res.status(200).json({"user": userToReturn, "valid": true, "error": ""});
         }
         else{
-            res.status(401).json({"valid": false})
+            res.status(200).json({"user": null, "valid": false, "error": "Invalid login credentials"})
         }
     }
-    else{
-        return res.status(400).json({"valid": false, "error": "Error opening file"});
+    catch (err) {
+        res.status(500).json({"user": null, "valid": false, "error": "Error connecting to mongo database"});
     }
 }
