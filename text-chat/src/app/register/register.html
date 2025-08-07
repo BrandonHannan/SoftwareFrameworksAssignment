@@ -1,0 +1,20 @@
+<br><br>
+<div class="register-container">
+    <form (ngSubmit)="checkSignUp()" #registerForm="ngForm" id="login">
+        <h1>Create New User</h1>
+        <div>
+            <label>Email</label>
+            <input type="email" class="form-control" [(ngModel)]="email" name="email">
+        </div>
+        <div>
+            <label>Username</label>
+            <input type="username" class="form-control" [(ngModel)]="username" name="username">
+        </div>
+        <div>
+            <label>Password</label>
+            <input type="password" class="form-control" [(ngModel)]="password" name="password">
+        </div>
+        <button type="submit">Submit</button>
+        <p *ngIf="errorMessage" id="error">{{ errorMessage }}</p>
+    </form>
+</div>
