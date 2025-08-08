@@ -1,0 +1,160 @@
+{
+    "groups": [
+        {
+            "id": 0,
+            "name": "Initial Group",
+            "users": [
+                {
+                    "username": "super",
+                    "profilePicture": null,
+                    "role": "SuperAdmin"
+                }
+            ],
+            "channels": [
+                {
+                    "groupId": 0,
+                    "id": 0,
+                    "name": "Initial Channel",
+                    "messages": [
+                        {
+                            "username": "super",
+                            "profilePicture": null,
+                            "message": "First message",
+                            "image": null,
+                            "groupId": 0,
+                            "channelId": 0
+                        }
+                    ],
+                    "allowedUsers": []
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "name": "noadmin",
+            "users": [
+                {
+                    "username": "super",
+                    "profilePicture": null,
+                    "role": "SuperAdmin"
+                }
+            ],
+            "channels": [
+                {
+                    "groupId": 1,
+                    "id": 0,
+                    "name": "Initial Channel",
+                    "messages": [
+                        {
+                            "username": "super",
+                            "profilePicture": null,
+                            "message": "First message",
+                            "image": null,
+                            "groupId": 1,
+                            "channelId": 0
+                        }
+                    ],
+                    "allowedUsers": []
+                }
+            ]
+        }
+    ],
+    "users": [
+        {
+            "id": 0,
+            "username": "super",
+            "email": "super@email.com",
+            "profilePicture": null,
+            "roles": [
+                "SuperAdmin"
+            ],
+            "password": "123",
+            "groups": [
+                {
+                    "id": 0,
+                    "name": "Initial Group",
+                    "users": [
+                        {
+                            "username": "super",
+                            "profilePicture": null,
+                            "role": "SuperAdmin"
+                        }
+                    ],
+                    "channels": [
+                        {
+                            "groupId": 0,
+                            "id": 0,
+                            "name": "Initial Channel",
+                            "messages": [
+                                {
+                                    "username": "super",
+                                    "profilePicture": null,
+                                    "message": "First message",
+                                    "image": null,
+                                    "groupId": 0,
+                                    "channelId": 0
+                                }
+                            ],
+                            "allowedUsers": []
+                        }
+                    ]
+                },
+                {
+                    "id": 1,
+                    "name": "noadmin",
+                    "users": [
+                        {
+                            "username": "super",
+                            "profilePicture": null,
+                            "role": "SuperAdmin"
+                        }
+                    ],
+                    "channels": [
+                        {
+                            "groupId": 1,
+                            "id": 0,
+                            "name": "Initial Channel",
+                            "messages": [
+                                {
+                                    "username": "super",
+                                    "profilePicture": null,
+                                    "message": "First message",
+                                    "image": null,
+                                    "groupId": 1,
+                                    "channelId": 0
+                                }
+                            ],
+                            "allowedUsers": []
+                        }
+                    ]
+                }
+            ],
+            "adminGroups": [],
+            "requests": [
+                {
+                    "username": "dummy",
+                    "profilePicture": null,
+                    "groupId": 0,
+                    "group": "Initial Group"
+                }
+            ],
+            "allowedChannels": [],
+            "reports": []
+        },
+        {
+            "id": 1,
+            "username": "dummy",
+            "email": "dummy@email.com",
+            "profilePicture": null,
+            "roles": [
+                "User"
+            ],
+            "password": "123",
+            "groups": [],
+            "adminGroups": [],
+            "requests": [],
+            "allowedChannels": [],
+            "reports": []
+        }
+    ]
+}

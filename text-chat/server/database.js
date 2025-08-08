@@ -5,6 +5,8 @@ const uri = process.env.MONGODB_URI;
 
 const client = new MongoClient(uri);
 
+const seedDatabase = require('./seed');
+
 let db;
 
 async function connectDB() {
@@ -12,6 +14,9 @@ async function connectDB() {
     try {
         await client.connect();
         db = client.db("db");
+
+        await seedDatabase(db);
+        
         return db;
     } catch (e) {
         console.error(e);
