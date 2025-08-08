@@ -1,0 +1,174 @@
+<div class="container mt-5">
+    <div class="row align-items-center">
+        <!-- Profile Picture -->
+        <div class="col-md-4 text-center">
+            <div class="d-flex flex-column align-items-center">
+                <img *ngIf="profilePicture; else defaultPic" [src]="profilePicture" class="rounded-circle img-fluid"
+                    style="width: 150px; height: 150px; object-fit: cover;" alt="Profile Picture" />
+                <ng-template #defaultPic>
+                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                        style="width: 150px; height: 150px; font-size: 2rem;">
+                        {{ username[0] | uppercase }}
+                    </div>
+                </ng-template>
+                <div class="mt-3">
+                    <label class="btn btn-sm btn-primary">
+                        Upload Profile Picture
+                        <input type="file" hidden (change)="onProfilePictureSelected($event)" accept="image/*" />
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Details -->
+        <div class="col-md-8">
+            <h2>{{ username }}</h2>
+            <div class="mt-2">
+                <button class="btn btn-primary rounded-pill px-3" data-bs-toggle="modal"
+                        data-bs-target="#updateUsernameModal">
+                    Update Username
+                </button>
+            </div>
+            <br>
+            <p><strong>Email:</strong> {{ email }}</p>
+            <div class="mt-2">
+                <button class="btn btn-primary rounded-pill px-3" data-bs-toggle="modal"
+                        data-bs-target="#updateEmailModal">
+                    Update Email
+                </button>
+            </div>
+            <br>
+            <p>
+                <strong>Roles:</strong>
+                <span *ngIf="role">
+                    <span class="badge bg-primary me-1">
+                        {{ role }}
+                    </span>
+                </span>
+            </p>
+            <div class="mt-3">
+                <strong>Groups:</strong>
+                <ng-container *ngIf="filteredGroups.length; else noGroups">
+                    <ul class="list-group mt-2">
+                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                            *ngFor="let group of filteredGroups">
+                            {{ group.group }}
+                            <span class="badge rounded-pill bg-info text-dark">{{ group.permission }}</span>
+                        </li>
+                    </ul>
+                </ng-container>
+                <ng-template #noGroups>
+                    <p><em>None</em></p>
+                </ng-template>
+                <br>
+                <div class="mt-2">
+                    <button class="btn btn-primary rounded-pill px-3" data-bs-toggle="modal"
+                            data-bs-target="#updatePasswordModal">
+                        Update Password
+                    </button>
+                </div>
+                <br>
+                <div class="mt-4 d-flex justify-content-center gap-3">
+                    <button class="btn btn-outline-success rounded-pill px-4" *ngIf="role == 'Super Admin'" (click)="createNewUser()">
+                        Create New User
+                    </button>
+                </div>
+                <br>
+                <div class="mt-4 d-flex justify-content-center gap-3">
+                    <button class="btn btn-outline-danger rounded-pill px-4" (click)="logout()">
+                        Log out
+                    </button>
+
+                    <button class="btn btn-danger rounded-pill px-4" data-bs-toggle="modal"
+                        data-bs-target="#deleteAccountModal">
+                        Delete Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteAccountModalLabel">Confirm Account Deletion</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to permanently delete your account? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger rounded-pill" (click)="confirmDelete()">Delete
+                    Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateUsernameModal" tabindex="-1" aria-labelledby="updateUsernameModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="updateUsernameModalLabel">Update Username</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="newUsernameInput" class="form-label">New Username</label>
+                <input id="newUsernameInput" type="text" class="form-control" [(ngModel)]="newUsername" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary rounded-pill" (click)="updateUsername()">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateEmailModal" tabindex="-1" aria-labelledby="updateEmailModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="updateEmailModalLabel">Update Email</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="newEmailInput" class="form-label">New Email</label>
+                <input id="newEmailInput" type="text" class="form-control" [(ngModel)]="newEmail" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary rounded-pill" (click)="updateEmail()">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updatePasswordModal" tabindex="-1" aria-labelledby="updatePasswordModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="updatePasswordModalLabel">Update Password</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="newPasswordInput" class="form-label">New Password</label>
+                <input id="newPasswordInput" type="text" class="form-control" [(ngModel)]="newPassword" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary rounded-pill" (click)="updatePassword()">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
