@@ -1,0 +1,8 @@
+<div *ngIf="notification$ | async as notification" class="notification-container">
+  <div class="alert" [ngClass]="{
+    'alert-success': notification.type === 'success',
+    'alert-danger': notification.type === 'error'
+  }" role="alert">
+    {{ notification.message }}
+  </div>
+</div>
