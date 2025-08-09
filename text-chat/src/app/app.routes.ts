@@ -6,7 +6,6 @@ import { Groups } from './groups/groups.component';
 import { Register } from './register/register.component';
 import { Login } from './login/login.component';
 import { ChannelComponent } from './channel/channel.component';
-import { TextChat } from './text-chat/text-chat.component';
 import { Messages } from './messages/messages.component';
 
 export const routes: Routes = [
@@ -15,7 +14,6 @@ export const routes: Routes = [
     {path: 'groups', component: Groups},
     {path: 'channels', component: ChannelComponent},
     {path: 'messages', component: Messages},
-    {path: '', component: TextChat},
     {path: 'account', component: Account},
     {path: '', component: Home}
 ];
