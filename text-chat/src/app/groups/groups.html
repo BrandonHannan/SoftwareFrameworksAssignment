@@ -1,0 +1,317 @@
+<br>
+<div class="mt-3" *ngIf="role == 'User'; else admin">
+  <strong>My Groups:</strong>
+
+  <ng-container *ngIf="filteredGroups.length; else noGroups">
+    <ul class="list-group mt-2">
+      <li class="list-group-item" *ngFor="let group of filteredGroups">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            {{ group.group.name }}
+            <span class="badge rounded-pill bg-info text-dark ms-2">
+              {{ group.permission }}
+            </span>
+          </div>
+          <button class="btn btn-sm btn-primary rounded-pill" (click)="enterGroup(group.group.id)">
+            Enter Group
+          </button>
+        </div>
+
+        <div class="d-flex justify-content-end mt-2"
+          *ngIf="group.permission == 'SuperAdmin' || group.permission == 'GroupAdmin'">
+          <button class="btn btn-sm btn-danger rounded-pill" (click)="removeGroup(group.group.id)">
+            Remove
+          </button>
+        </div>
+      </li>
+    </ul>
+
+  </ng-container>
+
+
+  <ng-template #noGroups>
+    <p><em>None</em></p>
+  </ng-template>
+
+  <br> <br> <br>
+  <strong>All Groups:</strong>
+  <ng-container *ngIf="filteredAllGroups.length; else noAllGroups">
+    <ul class="list-group mt-2">
+      <li class="list-group-item" *ngFor="let group of filteredAllGroups">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            {{ group.group.name }}
+          </div>
+          <button *ngIf="group.permission == 'User'" class="btn btn-sm btn-primary rounded-pill"
+            (click)="requestGroup(group.group)">
+            Request Group
+          </button>
+        </div>
+      </li>
+    </ul>
+
+  </ng-container>
+
+
+  <ng-template #noAllGroups>
+    <p><em>None</em></p>
+  </ng-template>
+</div>
+
+<ng-template #admin>
+  <div class="d-flex">
+    <div class="me-3" style="width: 200px;">
+      <div style="height: 50vh; overflow-y:  auto;">
+        <strong>Requests:</strong>
+        <br>
+        <ul class="list-group">
+          <li class="list-group-item py-2 px-2" *ngFor="let request of requests" style="font-size: 0.85rem;">
+            <!-- Row: Profile + Username + Button -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center gap-2">
+                <!-- Profile Picture -->
+                <ng-container *ngIf="request.profilePicture && request.profilePicture != ''; else defaultPic">
+                  <img [src]="request.profilePicture" class="rounded-circle"
+                    style="width: 25px; height: 25px; object-fit: cover; aspect-ratio: 1;" alt="Profile Picture" />
+                </ng-container>
+                <ng-template #defaultPic>
+                  <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                    style="width: 25px; height: 25px; font-size: 0.75rem; line-height: 1; aspect-ratio: 1;">
+                    {{ request.username[0] | uppercase }}
+                  </div>
+                </ng-template>
+              </div>
+
+              <!-- Review Button -->
+              <button class="btn btn-sm btn-outline-primary rounded-pill me-1 px-2 py-0" style="font-size: 0.75rem;"
+                data-bs-toggle="modal" data-bs-target="#reviewRequestModal" (click)="updateCurrentRequest(request)">
+                Review
+              </button>
+            </div>
+            <div class="mt-1 text-truncate" style="max-width: 100%;">
+              <small class="text-muted">User: {{ request.username }}</small>
+            </div>
+            <!-- Group Request: Below row -->
+            <div class="mt-1 text-truncate" style="max-width: 100%;">
+              <small class="text-muted">Group Request: {{ request.group }}</small>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <br>
+      <div style="height: 50vh; overflow-y: auto;" *ngIf="role == 'SuperAdmin'">
+        <strong>Reports:</strong>
+        <br>
+        <ul class="list-group">
+          <li class="list-group-item py-2 px-2" *ngFor="let report of filteredReports" style="font-size: 0.85rem;">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center gap-2">
+                <ng-container *ngIf="report.adminProfilePicture && report.adminProfilePicture != ''; else defaultPic">
+                  <img [src]="report.adminProfilePicture" class="rounded-circle"
+                    style="width: 25px; height: 25px; object-fit: cover; aspect-ratio: 1;" alt="Profile Picture" />
+                </ng-container>
+                <ng-template #defaultPic>
+                  <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                    style="width: 25px; height: 25px; font-size: 0.75rem; line-height: 1; aspect-ratio: 1;">
+                    {{ report.adminReport[0] | uppercase }}
+                  </div>
+                </ng-template>
+              </div>
+
+              <button class="btn btn-sm btn-outline-primary rounded-pill me-1 px-2 py-0" style="font-size: 0.75rem;"
+                data-bs-toggle="modal" data-bs-target="#reviewReportModal" (click)="updateCurrentReport(report)">
+                Review
+              </button>
+            </div>
+            <div class="mt-1 text-truncate" style="max-width: 100%;">
+              <small class="text-muted">Admin Reporter: {{ report.adminReport }}</small>
+            </div>
+            <div class="mt-1 text-truncate" style="max-width: 100%;">
+              <small class="text-muted">Reporting: {{ report.usernameReported }}</small>
+            </div>
+            <div class="mt-1 text-truncate" style="max-width: 100%;">
+              <small class="text-muted">Group Reported: {{ report.groupName }}</small>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flex-grow-1">
+      <strong>My Groups:</strong>
+
+      <ng-container *ngIf="filteredGroups.length; else noGroups">
+        <ul class="list-group mt-2">
+          <li class="list-group-item" *ngFor="let group of filteredGroups">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                {{ group.group.name }}
+                <span class="badge rounded-pill bg-info text-dark ms-2">
+                  {{ group.permission }}
+                </span>
+              </div>
+              <button class="btn btn-sm btn-primary rounded-pill" (click)="enterGroup(group.group.id)">
+                Enter Group
+              </button>
+            </div>
+
+            <div class="d-flex justify-content-end mt-2"
+              *ngIf="group.permission == 'SuperAdmin' || group.permission == 'GroupAdmin'">
+              <button class="btn btn-sm btn-danger rounded-pill" (click)="removeGroup(group.group.id)">
+                Remove
+              </button>
+            </div>
+          </li>
+        </ul>
+        <br>
+        <div class="mt-2" *ngIf="role == 'SuperAdmin' || role == 'GroupAdmin'">
+          <button class="btn btn-outline-success rounded-pill px-3" data-bs-toggle="modal"
+            data-bs-target="#createGroupModal">
+            Create New Group
+          </button>
+        </div>
+
+      </ng-container>
+
+
+      <ng-template #noGroups>
+        <p><em>None</em></p>
+        <br>
+        <div class="mt-2" *ngIf="role == 'SuperAdmin' || role == 'GroupAdmin'">
+          <button class="btn btn-outline-success rounded-pill px-3" data-bs-toggle="modal"
+            data-bs-target="#createGroupModal">
+            Create New Group
+          </button>
+        </div>
+      </ng-template>
+
+      <br> <br> <br>
+      <strong>All Groups:</strong>
+      <ng-container *ngIf="filteredAllGroups.length; else noAllGroups">
+        <ul class="list-group mt-2">
+          <li class="list-group-item" *ngFor="let group of filteredAllGroups">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                {{ group.group.name }}
+                <span class="badge rounded-pill bg-info text-dark ms-2">
+                  {{ group.permission }}
+                </span>
+              </div>
+              <button *ngIf="group.permission == 'User'" class="btn btn-sm btn-primary rounded-pill"
+                (click)="requestGroup(group.group)">
+                Request Group
+              </button>
+            </div>
+          </li>
+        </ul>
+
+      </ng-container>
+
+
+      <ng-template #noAllGroups>
+        <p><em>None</em></p>
+      </ng-template>
+
+    </div>
+  </div>
+</ng-template>
+
+
+<div class="modal fade" id="createGroupModal" tabindex="-1" aria-labelledby="createGroupModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="createGroupModalLabel">Create New Group</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="newGroupNameInput" class="form-label">New Group Name</label>
+        <input id="newGroupNameInput" type="text" class="form-control" [(ngModel)]="newGroupName" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-outline-success rounded-pill" (click)="createGroup()">Create</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="reviewRequestModal" tabindex="-1" aria-labelledby="reviewRequestModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" *ngIf="currentRequest">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="reviewRequestModalLabel">User Request</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <img *ngIf="currentRequest.profilePicture && currentRequest.profilePicture != ''; else defaultPic"
+          [src]="currentRequest.profilePicture" class="rounded-circle img-fluid"
+          style="width: 50px; height: 50px; object-fit: cover;" alt="Profile Picture" />
+        <ng-template #defaultPic>
+          <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+            style="width: 50px; height: 50px; font-size: 2rem;">
+            {{ currentRequest.username[0] | uppercase }}
+          </div>
+        </ng-template>
+        <br>
+        <label class="form-label"><strong>Username:</strong> {{ currentRequest.username }}</label>
+        <br>
+        <label class="form-label"><strong>Group Request:</strong> {{ currentRequest.group }}</label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger rounded-pill" (click)="rejectRequest()">Reject</button>
+        <button type="button" class="btn btn-outline-success rounded-pill" (click)="acceptRequest()">Accept</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="reviewReportModal" tabindex="-1" aria-labelledby="reviewReportModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" *ngIf="currentReport">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="reviewReportModalLabel">Report</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex align-items-center mb-3">
+          <ng-container
+            *ngIf="currentReport.adminProfilePicture && currentReport.adminProfilePicture != ''; else defaultPic1">
+            <img [src]="currentReport.adminProfilePicture" class="rounded-circle img-fluid me-3"
+              style="width: 50px; height: 50px; object-fit: cover;" alt="Profile Picture" />
+          </ng-container>
+          <ng-template #defaultPic1>
+            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3"
+              style="width: 50px; height: 50px; font-size: 1.5rem;">
+              {{ currentReport.adminReport[0] | uppercase }}
+            </div>
+          </ng-template>
+          <label class="form-label"><strong>Admin:</strong>{{ currentReport.adminReport }}</label>
+        </div>
+
+        <div class="d-flex align-items-center">
+          <ng-container
+            *ngIf="currentReport.userProfilePicture && currentReport.userProfilePicture != ''; else defaultPic2">
+            <img [src]="currentReport.userProfilePicture" class="rounded-circle img-fluid me-3"
+              style="width: 50px; height: 50px; object-fit: cover;" alt="Profile Picture" />
+          </ng-container>
+          <ng-template #defaultPic2>
+            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3"
+              style="width: 50px; height: 50px; font-size: 1.5rem;">
+              {{ currentReport.usernameReported[0] | uppercase }}
+            </div>
+          </ng-template>
+          <label class="form-label"><strong>User Reported:</strong>{{ currentReport.usernameReported }}</label>
+        </div>
+        <br>
+        <label class="form-label"><strong>Group Reported:</strong> {{ currentReport.groupName }}</label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-outline-danger rounded-pill" (click)="acceptReport()">Ban User</button>
+      </div>
+    </div>
+  </div>
+</div>
