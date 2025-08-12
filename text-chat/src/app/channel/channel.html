@@ -1,0 +1,264 @@
+<br>
+<div class="mt-3" *ngIf="role == 'User'; else admin">
+    <strong>Channels:</strong>
+
+    <ng-container *ngIf="filteredChannels.length; else noChannels">
+        <ul class="list-group mt-2">
+            <li class="list-group-item" *ngFor="let channel of filteredChannels">
+                <div class="d-flex justify-content-between align-items-center" *ngIf="channel.permission == true">
+                    <div>
+                        {{ channel.channel.name }}
+                    </div>
+                    <button class="btn btn-sm btn-primary rounded-pill" (click)="enterChannel(channel.channel)">
+                        Enter Channel
+                    </button>
+                </div>
+            </li>
+        </ul>
+        <br>
+        <div class="mt-2">
+            <button class="btn btn-outline-danger rounded-pill px-3" (click)="leaveGroup()">
+                Leave Group
+            </button>
+        </div>
+
+    </ng-container>
+
+
+    <ng-template #noChannels>
+        <p><em>None</em></p>
+        <br>
+        <div class="mt-2">
+            <button class="btn btn-outline-danger rounded-pill px-3" (click)="leaveGroup()">
+                Leave Group
+            </button>
+        </div>
+    </ng-template>
+</div>
+
+<ng-template #admin>
+    <div class="d-flex">
+        <div class="me-3" style="width: 200px; height: 100vh; overflow-y: auto;">
+            <strong>Users:</strong>
+            <br>
+            <ul class="list-group">
+                <li class="list-group-item py-2 px-2" *ngFor="let user of filteredUsers" style="font-size: 0.85rem;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <ng-container
+                                *ngIf="user.user.profilePicture && user.user.profilePicture != ''; else defaultPic">
+                                <img [src]="user.user.profilePicture" class="rounded-circle"
+                                    style="width: 25px; height: 25px; object-fit: cover; aspect-ratio: 1;"
+                                    alt="Profile Picture" />
+                            </ng-container>
+                            <ng-template #defaultPic>
+                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                    style="width: 25px; height: 25px; font-size: 0.75rem; line-height: 1; aspect-ratio: 1;">
+                                    {{ user.user.username[0] | uppercase }}
+                                </div>
+                            </ng-template>
+                        </div>
+
+                        <button class="btn btn-sm btn-outline-primary rounded-pill me-1 px-2 py-0"
+                            style="font-size: 0.75rem;" data-bs-toggle="modal" data-bs-target="#modifyUserModal"
+                            (click)="updateUser(user.user)"
+                            *ngIf="user.user.role == 'User' || (user.user.role == 'GroupAdmin' && role == 'SuperAdmin')">
+                            Modify
+                        </button>
+                    </div>
+                    <div class="mt-1 text-truncate" style="max-width: 100%;">
+                        <small class="text-muted">User: {{ user.user.username }}</small>
+                        <span class="badge rounded-pill bg-info text-dark ms-2">
+                            {{ user.user.role }}
+                        </span>
+                    </div>
+                </li>
+            </ul>
+            <br>
+            <div class="mt-2" *ngIf="role == 'SuperAdmin' || role == 'GroupAdmin'">
+                <button class="btn btn-outline-success rounded-pill px-3" data-bs-toggle="modal"
+                    data-bs-target="#addNewUserModal">
+                    Add New User
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-grow-1">
+            <strong>Channels:</strong>
+
+            <ng-container *ngIf="filteredChannels.length; else noChannels">
+                <ul class="list-group mt-2">
+                    <li class="list-group-item" *ngFor="let channel of filteredChannels">
+                        <div class="d-flex justify-content-between align-items-center"
+                            *ngIf="channel.permission == true">
+                            <div>
+                                {{ channel.channel.name }}
+                            </div>
+                            <button class="btn btn-sm btn-primary rounded-pill" *ngIf="channel.permission == true"
+                                (click)="enterChannel(channel.channel)">
+                                Enter Channel
+                            </button>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-2"
+                            *ngIf="(channel.role == 'SuperAdmin' || channel.role == 'GroupAdmin') && channel.permission == true">
+                            <button class="btn btn-sm btn-danger rounded-pill"
+                                (click)="removeChannel(channel.channel.id)">
+                                Remove
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+                <br>
+                <div class="mt-2" *ngIf="role == 'SuperAdmin' || role == 'GroupAdmin'">
+                    <button class="btn btn-outline-success rounded-pill px-3" data-bs-toggle="modal"
+                        data-bs-target="#createChannelModal">
+                        Create New Channel
+                    </button>
+                </div>
+
+            </ng-container>
+
+
+            <ng-template #noChannels>
+                <p><em>None</em></p>
+                <br>
+                <div class="mt-2" *ngIf="role == 'SuperAdmin' || role == 'GroupAdmin'">
+                    <button class="btn btn-outline-success rounded-pill px-3" data-bs-toggle="modal"
+                        data-bs-target="#createChannelModal">
+                        Create New Channel
+                    </button>
+                </div>
+            </ng-template>
+
+        </div>
+    </div>
+</ng-template>
+
+
+<div class="modal fade" id="createChannelModal" tabindex="-1" aria-labelledby="createChannelModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="createChannelModalLabe">Create New Channel</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="newChannelNameInput" class="form-label">New Channel Name</label>
+                <input id="newChannelNameInput" type="text" class="form-control" [(ngModel)]="newChannelName" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-outline-success rounded-pill"
+                    (click)="createChannel()">Create</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modifyUserModal" tabindex="-1" aria-labelledby="modifyUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modifyUserModalLabel">Modify User</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+
+                <!-- Report User -->
+                <div class="modal-content p-2" *ngIf="userUpdate && userUpdate.role == 'User'">
+                    <button type="button" class="btn btn-outline-primary rounded-pill" (click)="reportUser()">
+                        Report
+                    </button>
+                </div>
+
+                <!-- Remove From Group -->
+                <div class="modal-content p-2">
+                    <button type="button" class="btn btn-outline-primary rounded-pill" (click)="removeUserFromGroup()">
+                        Remove User From Group
+                    </button>
+                </div>
+
+                <!-- Ban From Channel -->
+                <div class="modal-content p-2" *ngIf="userUpdate && userUpdate.role == 'User'">
+                    <label class="form-label">Ban User From Channel</label>
+                    <div class="d-flex flex-wrap gap-1">
+                        <button *ngFor="let channel of channels" class="btn btn-sm btn-outline-danger rounded-pill"
+                            (click)="banUserFromChannel(channel)">
+                            {{ channel.name }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add To Channel -->
+                <div class="modal-content p-2" *ngIf="userUpdate && userUpdate.role == 'User'">
+                    <label class="form-label">Add User To Channel</label>
+                    <div class="d-flex flex-wrap gap-1">
+                        <button *ngFor="let channel of channels" class="btn btn-sm btn-outline-success rounded-pill"
+                            (click)="addUserToChannel(channel)">
+                            {{ channel.name }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Promote User -->
+                <div class="modal-content p-2" *ngIf="role === 'SuperAdmin'">
+                    <label class="form-label">Promote User</label>
+                    <select class="form-select mb-2" [(ngModel)]="selectedRole">
+                        <option value="" disabled selected>Select Role</option>
+                        <option value="GroupAdmin">GroupAdmin</option>
+                        <option value="SuperAdmin">SuperAdmin</option>
+                    </select>
+                    <button type="button" class="btn btn-outline-success rounded-pill" [disabled]="!selectedRole"
+                        (click)="promoteUser(selectedRole)">
+                        Promote
+                    </button>
+                </div>
+
+                <!-- Delete User -->
+                <div class="modal-content p-2" *ngIf="role === 'SuperAdmin'">
+                    <label class="form-label">Delete User</label>
+                    <button type="button" class="btn btn-outline-danger rounded-pill" (click)="deleteUser()">
+                        Delete
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addNewUserModal" tabindex="-1" aria-labelledby="addNewUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addNewUserModalLabel">Add New User to Group</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="userSelect" class="form-label fw-semibold">All Users</label>
+                <div class="custom-select-wrapper">
+                    <select id="userSelect"
+                        class="form-select custom-select-scroll shadow-sm rounded-3 border border-primary-subtle"
+                        size="6" [(ngModel)]="newAddUser">
+                        <option *ngFor="let userWrapper of filteredAllUsers" [ngValue]="userWrapper.user">
+                            {{ userWrapper.user.username }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-outline-success rounded-pill" (click)="addNewUser()">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
