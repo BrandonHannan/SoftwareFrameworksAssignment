@@ -4,9 +4,13 @@
             "id": 0,
             "username": "super",
             "email": "super@email.com",
-            "roles": ["SuperAdmin"],
+            "profilePicture": null,
+            "roles": [
+                "SuperAdmin"
+            ],
             "password": "123",
-            "groups": []
+            "groups": ["test", "noadmin"],
+            "adminGroups": ["test"]
         }
     ]
 }
