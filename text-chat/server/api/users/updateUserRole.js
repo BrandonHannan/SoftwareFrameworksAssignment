@@ -71,8 +71,8 @@ module.exports = async function (req, res) {
             res.status(200).json({ "valid": true, "error": "" });
 
         }
-        // Standard Role Promotion
         else {
+            // Standard Role Promotion
             const [roleResult, groupResult] = await Promise.all([
                 db.collection('db').updateOne(
                     { "_id": dataDocument._id, "users.username": username }, 
@@ -93,16 +93,30 @@ module.exports = async function (req, res) {
                 return res.status(404).json({ "valid": false, "error": `Group with ID ${groupId} not found after update.` });
             }
 
-            await Promise.all([
-                db.collection('db').updateMany(
-                    { "_id": dataDocument._id, "users.adminGroups.id": groupId }, 
-                    { $set: { "users.$[user].adminGroups.$[group]": updatedGroup } }, 
-                    { arrayFilters: [{ "user.adminGroups.id": groupId }, { "group.id": groupId }] }),
-                db.collection('db').updateMany(
-                    { "_id": dataDocument._id, "users.groups.id": groupId }, 
-                    { $set: { "users.$[user].groups.$[group]": updatedGroup } }, 
-                    { arrayFilters: [{ "user.groups.id": groupId }, { "group.id": groupId }] })
-            ]);
+            await db.collection('db').updateOne(
+                { "users.username": username },
+                {
+                    $pull: {
+                        "users.$.groups": { id: groupId },
+                        "users.$.adminGroups": { id: groupId } // Also pull from adminGroups
+                    }
+                }
+            );
+
+            const pushOperations = {
+                "users.$.groups": updatedGroup // Always add/update in the main 'groups' array
+            };
+
+            // Conditionally add the group to 'adminGroups' only if the role is 'GroupAdmin'.
+            if (role === 'GroupAdmin') {
+                pushOperations["users.$.adminGroups"] = updatedGroup;
+            }
+            
+            // Execute the push operation to add the updated group back
+            await db.collection('db').updateOne(
+                { "users.username": username },
+                { $push: pushOperations }
+            );
 
             res.status(200).json({ "valid": true, "error": "" });
         }
