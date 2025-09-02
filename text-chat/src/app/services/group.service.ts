@@ -387,8 +387,9 @@ export class GroupService implements OnInit{
 
     public async removeUserFromGroup(user: GroupUser, groupId: number): Promise<boolean> {
         try {
+            const {profilePicture, ...newUser} = user;
             const result: AuthResult = await lastValueFrom(this.http.delete<AuthResult>(this.serverUrl + '/api/removeUserFromGroup', {
-                params: {"user": JSON.stringify(user), "groupId": groupId}
+                params: {"user": JSON.stringify(newUser), "groupId": groupId}
             }));
             if (result.valid){
                 this.notificationService.show(`${user.username} has been removed from the group`, 'success');
