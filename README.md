@@ -9,11 +9,9 @@ This document outlines the design, structure, architecture of a real-time text/v
 
 ## Git Repository and Version Control
 
-*Instructions: Describe how you organized and used your Git repository. Below are some template sections.*
-
 ### Repository Structure
 
-The Git repository is structured into one main directory named "text-chat'. This directory includes all the frontend code (Entire Angular Application) but it also contains another directory name "server" which contains the Node.js and Express.js server application to keep the frontend and backend codebases separate and organized:
+The Git repository is structured into one main directory named "text-chat'. This directory includes all the frontend code (Entire Angular Application) but it also contains another directory named "server" which contains the Node.js and Express.js server application to keep the frontend and backend codebases separate and organized:
 * `/text-chat`: Contains the entire Angular application including the backend server.
 * `/text-chat/server`: Contains the Node.js and Express.js server application.
 The `node_modules` directories for both are included in the `.gitignore` file to prevent them from being committed to the repository.
@@ -135,10 +133,10 @@ export interface State {
 The frontend is constructed with a component-based architecture where each component is responsible for a specific view which fufills user requirements for the project. 
 
 - `Home.component`: Displays a home page for users who have not logged in to gain information about the web application.
-- `Groups.component`: Displays all the groups that logged in user has access to and also displays all the groups that are within the database for the user to request access to if they do not have access to it currently. Additionally, administrative lists for requests to groups and reports for users with the respective roles and permissions.
+- `Groups.component`: Displays all the groups that logged-in user have access to and also displays all the groups that are within the database for the user to request access to if they do not have access to it currently. Additionally, administrative lists for requests to groups and reports for users are shown for users with the respective roles and permissions.
 - `Channel.component`: Displays all the channels that the user has access to within the user specified group. For admin users, it also displays the list of users within group and provides them the functionality to add/report/ban/delete users to the given group and to add/remove users from specified channels within the group.
--`Message.component`: Displays a text chat for the user given their current group and channel that they have specified. This text chat allows them to send text messages and images and loads the previous messages of the given channel and group.
-- `Login.component`: Displays a form that allows users to enter their user credentials 'email, username and password' in order to access the web application with their respective user information.
+- `Message.component`: Displays a text chat for the user given their current group and channel that they have specified. This text chat allows them to send text messages and images and loads the previous messages of the given channel and group.
+- `Login.component`: Displays a form that allows users to enter their user credentials which include their email, username and password to access the web application.
 - `Register.component`: Displays a form that only allows users with the role 'SuperAdmin' to create a new user given an email, username and password. 
 - `Account.component`: Displays the user's current credentials such as email, username, profile picture and the groups that they are within. It also provides them the functionality to logout, delete their account and create new accounts (redirect to the register component) if the user is a 'SuperAdmin'.
 - `App.component`: Displays the NavBar at the top of all component pages with a logo. It contains links to the home page, groups page and account page.
@@ -152,7 +150,7 @@ Services are used to handle shared logic, data manipulation and communication wi
 ---
 
 ## Node.js Server Architecture
-The server is built utilising Node.js and Express.js frameworks and connected to a MongoDB database. All the application data is stored within a single MongoDB document to simplify data management. Initially, the when the server is run with `node server.js`, it checks if the MongoDB `'db'` database is empty. If it is then the `seed.js` file is run and the base data .json document is loaded into the MongoDB `'db'` database and the `'db'` collection.
+The server is built utilising Node.js and Express.js frameworks and connected to a MongoDB database. All the application data is stored within a single MongoDB document to simplify data management. Initially, when the server is run with `node server.js`, it checks if the MongoDB `'db'` database is empty. If it is then the `seed.js` file is run and the base data.json document is loaded into the MongoDB `'db'` database and the `'db'` collection.
 <br>
 Seed Base Data .json Document:
 ```
@@ -321,6 +319,7 @@ Seed Base Data .json Document:
 ### Architecture Overview
 - `Server.js`: The main entry point of the server. It sets up the Express application and configures middleware such as cors and Express.json to injest `.json` files and more importantly defines the API routes and functionalities. 
 - `Database.js`: A module that that defines and contains the logic to connecting to the MongoDB database. It exports a function that the route handlers use to get a database instance.
+- `Seed.js`: A module that inserts the seed data into the MongoDB database if it is currently empty.
 - `/api` directory: Contains individual Javascript files for each API route handler for logging in, creating a new user, deleting a user, adding a user to a group, creating a group, getting user information, making a request to enter a group, reporting another user and more. E.g. `login.js`, `createUser.js`
 
 
@@ -374,15 +373,15 @@ The following table possesses the information of the REST API endpoints that the
 | POST   | /api/acceptReport | Bans a user from a group and cleans up related data.  | Report object       | 200 OK with { valid: true }|
 
 ## Client-Server Interaction
-<small><small>Note: Not all interaction flows will be documented as there are too many</small></small> <br></br>
+<small><small>Note: Not all interaction flows will be documented as there are too many and only the main interaction flows will be described</small></small> <br></br>
 <strong>User Login Attempt</strong>
-1. Client (Admin's Browser): A user is within the login form page and enters their email/username and password and selects the `'Login'` button.
+1. Client (Admin's Browser): A user is within the login form page and enters their email/username and password and selects the `Login` button.
 
 2. Angular Component: The (click) event triggers the login() method in login.component.ts. This method gets the `LoginAttempt` object which contains the user's email/username and password from the login request.
 
 3. Angular Service: The component calls the AuthenticationService.login(user) method. The service packages the `LoginAttempt`object containing the user's credentials into a JSON payload.
 
-4. HTTP Request: The service sends an HTTP POST request to the /api/login endpoint on the Node.js server.
+4. HTTP Request: The service sends a HTTP POST request to the /api/login endpoint on the Node.js server.
 
 5. Node.js Server: The route handler for /api/login receives the request.
 
@@ -390,7 +389,7 @@ The following table possesses the information of the REST API endpoints that the
 
     - If the user exists, then it sends back a 200 OK response with { user: SessionStorageUser, valid: true, error: "" }. Where the user variable contains all the user's information other than the password.
 
-6. Client Response: The Angular AuthenticationService receives the success response. The local storage `'Credentials'` is set with the user's details and the login component then calls upon the router to navigate to the account component. However, if the response is a failure, then the login component initialises the error message from the received response and the notification service is called to notify the user for the error.
+6. Client Response: The Angular AuthenticationService receives the success response. The local storage `Credentials` is set with the user's details and the login component then calls upon the router to navigate to the account component. However, if the response is a failure, then the login component initialises the error message from the received response and the notification service is called to notify the user for the error.
 
 <strong>New User Registration</strong>
 1. Client (Angular): A "SuperAdmin" user clicks the "Create New User" button on the account page and fills out the registration form which includes the new user's username, email and password in the register component and clicks the "Create New User" button.
@@ -407,7 +406,7 @@ The following table possesses the information of the REST API endpoints that the
 
     - HTTP Response: The server returns a 200 OK response with the new user object but without the password and a valid: true flag.
 
-6. Client Update: The AuthenticationService receives the success response, stores the new user's credentials in localStorage, and the Notification Service will display a success message indicating that the new user has been created and the "SuperAdmin" user will return back to the account compononet page.
+6. Client Update: The AuthenticationService receives the success response, and the Notification Service will display a success message indicating that the new user has been created and the "SuperAdmin" user will return back to the account compononet page.
 
 <strong>Adding a User to a Group</strong>
 1. Client (Admin's Browser): An admin views the pending requests in the GroupsComponent. They click the "Review
@@ -457,9 +456,9 @@ The following table possesses the information of the REST API endpoints that the
 
 5. It executes a bulkWrite operation to perform a comprehensive and atomic cleanup across the entire database document.
 
-    It begins by removing the group from the groups list and removes all references to that given group from every user's groups and adminGroups, requests and reports array,
+    - It begins by removing the group from the groups list and removes all references to that given group from every user's groups and adminGroups, requests and reports array,
 
-    HTTP Response: The server returns a 200 OK response with { valid: true } upon successful deletion.
+    - HTTP Response: The server returns a 200 OK response with { valid: true } upon successful deletion.
 
 6. Client Update: The GroupsComponent reloads, and the deleted group is completely removed from all lists in the UI and the notification service is called display a success message that the group was successfully deleted.
 
@@ -472,21 +471,21 @@ The following table possesses the information of the REST API endpoints that the
 
 4. Server (Node.js): The /api/requestGroup handler receives the `Request` object.
 
-    It verifies the user is not already in the group.
+    - It verifies the user is not already in the group.
 
-    It adds the `Request` object to all users' requests array with the `'SuperAdmin'` role or if they are a `'GroupAdmin'` of the given group.
+    - It adds the `Request` object to all users' requests array with the `'SuperAdmin'` role or if they are a `'GroupAdmin'` of the given group.
 
 5. Admin Action: An administrator sees the pending request in their GroupsComponent and clicks the "Accept" button inside the review modal. This triggers the addNewUser method in the GroupService.
 
 6. Server (Node.js): The /api/addNewUser handler receives the groupId and user object.
 
-    It verifies the user is not already in the group.
+    - It verifies the user is not already in the group.
 
-    It adds the user to the group's main users list and adds the group to the user's personal groups list.
+    - It adds the user to the group's main users list and adds the group to the user's personal groups list.
 
-    Crucially, it removes the now-obsolete request from all admins' requests arrays.
+    - Crucially, it removes the now-obsolete request from all admins' requests arrays.
 
-    It then propagates the updated group object (which now includes the new member) to all other users.
+    - It then propagates the updated group object (which now includes the new member) to all other users.
 
 7. Client Update: The GroupsComponent reloads. The pending request disappears from the admin's view, and the user will now see the group in their "My Groups" list upon their next refresh and will be allowed to enter the group as a `'User'`.
 
@@ -501,14 +500,14 @@ The following table possesses the information of the REST API endpoints that the
 
 5. It performs three database updates in parallel:
 
-    Adds the new role to the user's main roles array.
+    - Adds the new role to the user's main roles array.
 
-    Updates the user's role to "GroupAdmin" or "SuperAdmin" specifically within the target group's users array.
+    - Updates the user's role to "GroupAdmin" or "SuperAdmin" specifically within the target group's users array.
 
-    Adds the entire group object to the user's adminGroups array, granting them administrative permissions.
+    - Adds the entire group object to the user's adminGroups array, granting them administrative permissions.
 
-    Then it updates all the groups within all user's groups and adminGroups arrays to ensure data consistency.
+    - Then it updates all the groups within all user's groups and adminGroups arrays to ensure data consistency.
 
-    HTTP Response: The server returns a 200 OK response with { valid: true }.
+    - HTTP Response: The server returns a 200 OK response with { valid: true }.
 
 6. Client Update: The ChannelComponent reloads. In the list of group members, the promoted user's role badge is updated to "GroupAdmin" or "SuperAdmin" if selected.
