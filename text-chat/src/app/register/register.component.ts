@@ -29,6 +29,9 @@ export class Register implements OnInit{
         this.router.navigateByUrl("/account");
       }
     }
+    else{
+      this.router.navigateByUrl("/login");
+    }
   }
 
   public async checkSignUp(): Promise<void> {
