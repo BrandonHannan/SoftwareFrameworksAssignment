@@ -4,23 +4,34 @@
 
     <ng-container *ngIf="filteredChannels.length; else noChannels">
         <ul class="list-group mt-2">
-            <li class="list-group-item" *ngFor="let channel of filteredChannels">
-                <div class="d-flex justify-content-between align-items-center" *ngIf="channel.permission == true">
-                    <div>
-                        {{ channel.channel.name }}
+            <li class="list-group-item" *ngFor="let channel of paginatedChannels">
+                <div class="list-item-customer" (click)="enterChannel(channel.channel)">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            {{ channel.channel.name }}
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-icon" 
+                                    (click)="openChannelDetailsModal(channel); $event.stopPropagation()"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#channelDetailsModal">
+                                <i class="bi bi-three-dots"></i>
+                            </button>
+                        </div>
                     </div>
-                    <button class="btn btn-sm btn-primary rounded-pill" (click)="enterChannel(channel.channel)">
-                        Enter Channel
-                    </button>
                 </div>
             </li>
         </ul>
-        <br>
-        <div class="mt-2">
-            <button class="btn btn-outline-danger rounded-pill px-3" (click)="leaveGroup()">
-                Leave Group
-            </button>
-        </div>
+        <nav *ngIf="getTotalChannelsPages() > 1" class="d-flex justify-content-end mt-2">
+            <ul class="pagination pagination-sm">
+                <li class="page-item" [class.disabled]="channelsCurrentPage === 1">
+                    <button class="page-link" (click)="changeChannelsPage(-1)">Previous</button>
+                </li>
+                <li class="page-item" [class.disabled]="channelsCurrentPage >= getTotalChannelsPages()">
+                    <button class="page-link" (click)="changeChannelsPage(1)">Next</button>
+                </li>
+            </ul>
+        </nav>
 
     </ng-container>
 
@@ -78,44 +89,53 @@
             <div class="mt-2" *ngIf="role == 'SuperAdmin' || role == 'GroupAdmin'">
                 <button class="btn btn-outline-success rounded-pill px-3" data-bs-toggle="modal"
                     data-bs-target="#addNewUserModal">
-                    Add New User
+                    <i class="bi bi-person-plus-fill me-2"></i> Add New User
                 </button>
             </div>
         </div>
 
         <div class="flex-grow-1">
-            <strong>Channels:</strong>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>Channels:</strong>
+                <button *ngIf="role == 'SuperAdmin' || role == 'GroupAdmin'" 
+                        class="btn btn-sm btn-success rounded-pill" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#createChannelModal">
+                <i class="bi bi-plus-circle me-1"></i>
+                Create New Channel
+                </button>
+            </div>
 
             <ng-container *ngIf="filteredChannels.length; else noChannels">
                 <ul class="list-group mt-2">
-                    <li class="list-group-item" *ngFor="let channel of filteredChannels">
-                        <div class="d-flex justify-content-between align-items-center"
-                            *ngIf="channel.permission == true">
-                            <div>
-                                {{ channel.channel.name }}
+                    <li class="list-group-item" *ngFor="let channel of paginatedChannels">
+                        <div class="list-item-customer" (click)="enterChannel(channel.channel)">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    {{ channel.channel.name }}
+                                </div>
+                                <div *ngIf="role === 'SuperAdmin' || role === 'GroupAdmin'">
+                                    <button class="btn btn-sm btn-icon" 
+                                            (click)="openChannelDetailsModal(channel); $event.stopPropagation()"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#channelDetailsModal">
+                                        <i class="bi bi-three-dots"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <button class="btn btn-sm btn-primary rounded-pill" *ngIf="channel.permission == true"
-                                (click)="enterChannel(channel.channel)">
-                                Enter Channel
-                            </button>
-                        </div>
-
-                        <div class="d-flex justify-content-end mt-2"
-                            *ngIf="(channel.role == 'SuperAdmin' || channel.role == 'GroupAdmin') && channel.permission == true">
-                            <button class="btn btn-sm btn-danger rounded-pill"
-                                (click)="removeChannel(channel.channel.id)">
-                                Remove
-                            </button>
                         </div>
                     </li>
                 </ul>
-                <br>
-                <div class="mt-2" *ngIf="role == 'SuperAdmin' || role == 'GroupAdmin'">
-                    <button class="btn btn-outline-success rounded-pill px-3" data-bs-toggle="modal"
-                        data-bs-target="#createChannelModal">
-                        Create New Channel
-                    </button>
-                </div>
+                <nav *ngIf="getTotalChannelsPages() > 1" class="d-flex justify-content-end mt-2">
+                    <ul class="pagination pagination-sm">
+                        <li class="page-item" [class.disabled]="channelsCurrentPage === 1">
+                            <button class="page-link" (click)="changeChannelsPage(-1)">Previous</button>
+                        </li>
+                        <li class="page-item" [class.disabled]="channelsCurrentPage >= getTotalChannelsPages()">
+                            <button class="page-link" (click)="changeChannelsPage(1)">Next</button>
+                        </li>
+                    </ul>
+                </nav>
 
             </ng-container>
 
@@ -261,4 +281,35 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="channelDetailsModal" tabindex="-1" aria-labelledby="channelDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" *ngIf="selectedChannel">
+      <div class="modal-header">
+        <h5 class="modal-title" id="channelDetailsModalLabel">
+          Channel Details: <strong>{{ selectedChannel.channel.name }}</strong>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Total Messages:
+            <span class="badge bg-secondary rounded-pill">{{ selectedChannel.channel.messages.length }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Users with Access:
+            <span class="badge bg-secondary rounded-pill">{{ selectedChannel.channel.allowedUsers.length }}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer" *ngIf="role === 'SuperAdmin' || role === 'GroupAdmin'">
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger rounded-pill" (click)="removeChannel(selectedChannel.channel.id)" data-bs-dismiss="modal">
+          <i class="bi bi-trash me-1"></i>Delete Channel
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

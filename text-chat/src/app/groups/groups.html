@@ -2,29 +2,40 @@
 <div class="mt-3" *ngIf="role == 'User'; else admin">
   <strong>My Groups:</strong>
 
-  <ng-container *ngIf="filteredGroups.length; else noGroups">
+  <ng-container *ngIf="paginatedMyGroups.length; else noGroups">
     <ul class="list-group mt-2">
-      <li class="list-group-item" *ngFor="let group of filteredGroups">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            {{ group.group.name }}
-            <span class="badge rounded-pill bg-info text-dark ms-2">
-              {{ group.permission }}
-            </span>
+      <li class="list-group-item" *ngFor="let group of paginatedMyGroups">
+        <div class="list-item-customer" (click)="enterGroup(group.group.id)">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              {{ group.group.name }}
+              <span class="badge rounded-pill bg-info text-dark ms-2">
+                {{ group.permission }}
+              </span>
+            </div>
           </div>
-          <button class="btn btn-sm btn-primary rounded-pill" (click)="enterGroup(group.group.id)">
-            Enter Group
-          </button>
-        </div>
 
-        <div class="d-flex justify-content-end mt-2"
-          *ngIf="group.permission == 'SuperAdmin' || group.permission == 'GroupAdmin'">
-          <button class="btn btn-sm btn-danger rounded-pill" (click)="removeGroup(group.group.id)">
-            Remove
-          </button>
+          <div class="d-flex justify-content-end mt-2">
+            <button class="btn btn-sm btn-icon" 
+                    (click)="openGroupDetailsModal(group); $event.stopPropagation()"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#groupDetailsModal">
+                <i class="bi bi-three-dots"></i>
+            </button>
+          </div>
         </div>
       </li>
     </ul>
+    <nav *ngIf="getTotalMyGroupsPages() > 1" class="d-flex justify-content-end mt-2">
+      <ul class="pagination pagination-sm">
+        <li class="page-item" [class.disabled]="myGroupsCurrentPage === 1">
+          <button class="page-link" (click)="changeMyGroupsPage(-1)">Previous</button>
+        </li>
+        <li class="page-item" [class.disabled]="myGroupsCurrentPage >= getTotalMyGroupsPages()">
+          <button class="page-link" (click)="changeMyGroupsPage(1)">Next</button>
+        </li>
+      </ul>
+    </nav>
 
   </ng-container>
 
@@ -35,20 +46,34 @@
 
   <br> <br> <br>
   <strong>All Groups:</strong>
-  <ng-container *ngIf="filteredAllGroups.length; else noAllGroups">
+  <ng-container *ngIf="paginatedAllGroups.length; else noAllGroups">
     <ul class="list-group mt-2">
-      <li class="list-group-item" *ngFor="let group of filteredAllGroups">
+      <li class="list-group-item" *ngFor="let group of paginatedAllGroups">
         <div class="d-flex justify-content-between align-items-center">
           <div>
             {{ group.group.name }}
           </div>
-          <button *ngIf="group.permission == 'User'" class="btn btn-sm btn-primary rounded-pill"
-            (click)="requestGroup(group.group)">
-            Request Group
-          </button>
+          <div class="d-flex justify-content-end mt-2">
+            <button class="btn btn-sm btn-icon" 
+                    (click)="openGroupDetailsModal(group); $event.stopPropagation()"
+                    data-bs-toggle="modal" 
+                    data-bs-target="#groupDetailsModal">
+                <i class="bi bi-three-dots"></i>
+            </button>
+          </div>
         </div>
       </li>
     </ul>
+    <nav *ngIf="getTotalAllGroupsPages() > 1" class="d-flex justify-content-end mt-2">
+      <ul class="pagination pagination-sm">
+        <li class="page-item" [class.disabled]="allGroupsCurrentPage === 1">
+          <button class="page-link" (click)="changeAllGroupsPage(-1)">Previous</button>
+        </li>
+        <li class="page-item" [class.disabled]="allGroupsCurrentPage >= getTotalAllGroupsPages()">
+          <button class="page-link" (click)="changeAllGroupsPage(1)">Next</button>
+        </li>
+      </ul>
+    </nav>
 
   </ng-container>
 
@@ -62,11 +87,11 @@
   <div class="d-flex">
     <div class="me-3" style="width: 200px;">
       <div style="height: 50vh; overflow-y:  auto;">
+        <br>
         <strong>Requests:</strong>
         <br>
         <ul class="list-group">
           <li class="list-group-item py-2 px-2" *ngFor="let request of requests" style="font-size: 0.85rem;">
-            <!-- Row: Profile + Username + Button -->
             <div class="d-flex justify-content-between align-items-center">
               <div class="d-flex align-items-center gap-2">
                 <!-- Profile Picture -->
@@ -138,38 +163,53 @@
     </div>
 
     <div class="flex-grow-1">
-      <strong>My Groups:</strong>
+      <br>
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <strong>My Groups:</strong>
+        <button *ngIf="role == 'SuperAdmin' || role == 'GroupAdmin'" 
+                class="btn btn-sm btn-success rounded-pill" 
+                data-bs-toggle="modal" 
+                data-bs-target="#createGroupModal">
+          <i class="bi bi-plus-circle me-1"></i>
+          Create New Group
+        </button>
+      </div>
 
-      <ng-container *ngIf="filteredGroups.length; else noGroups">
+      <ng-container *ngIf="paginatedMyGroups.length; else noGroups">
         <ul class="list-group mt-2">
-          <li class="list-group-item" *ngFor="let group of filteredGroups">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                {{ group.group.name }}
-                <span class="badge rounded-pill bg-info text-dark ms-2">
-                  {{ group.permission }}
-                </span>
+          <li class="list-group-item" *ngFor="let group of paginatedMyGroups">
+            <div class="list-item-customer" (click)="enterGroup(group.group.id)">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  {{ group.group.name }}
+                  <span class="badge rounded-pill bg-info text-dark ms-2">
+                    {{ group.permission }}
+                  </span>
+                </div>
               </div>
-              <button class="btn btn-sm btn-primary rounded-pill" (click)="enterGroup(group.group.id)">
-                Enter Group
-              </button>
-            </div>
 
-            <div class="d-flex justify-content-end mt-2"
-              *ngIf="group.permission == 'SuperAdmin' || group.permission == 'GroupAdmin'">
-              <button class="btn btn-sm btn-danger rounded-pill" (click)="removeGroup(group.group.id)">
-                Remove
-              </button>
+              <div class="d-flex justify-content-end mt-2">
+                <button class="btn btn-sm btn-icon" 
+                        (click)="openGroupDetailsModal(group); $event.stopPropagation()"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#groupDetailsModal">
+                    <i class="bi bi-three-dots"></i>
+                </button>
+              </div>
             </div>
           </li>
         </ul>
+        <nav *ngIf="getTotalMyGroupsPages() > 1" class="d-flex justify-content-end mt-2">
+          <ul class="pagination pagination-sm">
+            <li class="page-item" [class.disabled]="myGroupsCurrentPage === 1">
+              <button class="page-link" (click)="changeMyGroupsPage(-1)">Previous</button>
+            </li>
+            <li class="page-item" [class.disabled]="myGroupsCurrentPage >= getTotalMyGroupsPages()">
+              <button class="page-link" (click)="changeMyGroupsPage(1)">Next</button>
+            </li>
+          </ul>
+        </nav>
         <br>
-        <div class="mt-2" *ngIf="role == 'SuperAdmin' || role == 'GroupAdmin'">
-          <button class="btn btn-outline-success rounded-pill px-3" data-bs-toggle="modal"
-            data-bs-target="#createGroupModal">
-            Create New Group
-          </button>
-        </div>
 
       </ng-container>
 
@@ -177,33 +217,43 @@
       <ng-template #noGroups>
         <p><em>None</em></p>
         <br>
-        <div class="mt-2" *ngIf="role == 'SuperAdmin' || role == 'GroupAdmin'">
-          <button class="btn btn-outline-success rounded-pill px-3" data-bs-toggle="modal"
-            data-bs-target="#createGroupModal">
-            Create New Group
-          </button>
-        </div>
       </ng-template>
 
-      <br> <br> <br>
+      <br> 
       <strong>All Groups:</strong>
-      <ng-container *ngIf="filteredAllGroups.length; else noAllGroups">
+      <ng-container *ngIf="paginatedAllGroups.length; else noAllGroups">
         <ul class="list-group mt-2">
-          <li class="list-group-item" *ngFor="let group of filteredAllGroups">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                {{ group.group.name }}
-                <span class="badge rounded-pill bg-info text-dark ms-2">
-                  {{ group.permission }}
-                </span>
+          <li class="list-group-item" *ngFor="let group of paginatedAllGroups">
+            <div class="list-item-customer">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  {{ group.group.name }}
+                  <span class="badge rounded-pill bg-info text-dark ms-2">
+                    {{ group.permission }}
+                  </span>
+                </div>
+                <div>
+                  <button class="btn btn-sm btn-icon" 
+                          (click)="openGroupDetailsModal(group); $event.stopPropagation()"
+                          data-bs-toggle="modal" 
+                          data-bs-target="#groupDetailsModal">
+                      <i class="bi bi-three-dots"></i>
+                  </button>
+                </div>
               </div>
-              <button *ngIf="group.permission == 'User'" class="btn btn-sm btn-primary rounded-pill"
-                (click)="requestGroup(group.group)">
-                Request Group
-              </button>
             </div>
           </li>
         </ul>
+        <nav *ngIf="getTotalAllGroupsPages() > 1" class="d-flex justify-content-end mt-2">
+          <ul class="pagination pagination-sm">
+            <li class="page-item" [class.disabled]="allGroupsCurrentPage === 1">
+              <button class="page-link" (click)="changeAllGroupsPage(-1)">Previous</button>
+            </li>
+            <li class="page-item" [class.disabled]="allGroupsCurrentPage >= getTotalAllGroupsPages()">
+              <button class="page-link" (click)="changeAllGroupsPage(1)">Next</button>
+            </li>
+          </ul>
+        </nav>
 
       </ng-container>
 
@@ -211,7 +261,7 @@
       <ng-template #noAllGroups>
         <p><em>None</em></p>
       </ng-template>
-
+      <br>
     </div>
   </div>
 </ng-template>
@@ -311,6 +361,49 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
         <button type="button" class="btn btn-outline-danger rounded-pill" (click)="acceptReport()">Ban User</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="groupDetailsModal" tabindex="-1" aria-labelledby="groupDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" *ngIf="selectedGroup">
+      <div class="modal-header">
+        <h5 class="modal-title" id="groupDetailsModalLabel">
+          Group Details: <strong>{{ selectedGroup.group.name }}</strong>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Your Permission:
+            <span class="badge bg-primary rounded-pill">{{ selectedGroup.permission }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Total Users:
+            <span class="badge bg-secondary rounded-pill">{{ selectedGroup.group.users.length }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Total Channels:
+            <span class="badge bg-secondary rounded-pill">{{ selectedGroup.group.channels.length }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center" *ngIf="!selectedGroup.isMember">
+            Request to Join: 
+            <button class="btn btn-sm btn-success rounded-pill"
+              (click)="requestGroup(selectedGroup.group)">
+              <i class="bi bi-person-plus-fill me-1"></i>
+              Request Group
+            </button>
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer" *ngIf="selectedGroup.isMember && (selectedGroup.permission === 'SuperAdmin' || selectedGroup.permission === 'GroupAdmin')">
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger rounded-pill" (click)="removeGroup(selectedGroup.group.id)" data-bs-dismiss="modal">
+          <i class="bi bi-trash me-1"></i>Delete Group
+        </button>
       </div>
     </div>
   </div>

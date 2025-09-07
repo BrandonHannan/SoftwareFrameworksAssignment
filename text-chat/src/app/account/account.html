@@ -1,87 +1,130 @@
-<div class="container mt-5">
-    <div class="row align-items-center">
-        <!-- Profile Picture -->
-        <div class="col-md-4 text-center">
-            <div class="d-flex flex-column align-items-center">
-                <img *ngIf="profilePicture; else defaultPic" [src]="profilePicture" class="rounded-circle img-fluid"
-                    style="width: 150px; height: 150px; object-fit: cover;" alt="Profile Picture" />
-                <ng-template #defaultPic>
-                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
-                        style="width: 150px; height: 150px; font-size: 2rem;">
-                        {{ username[0] | uppercase }}
+<div class="container py-5">
+    <div class="row g-4"> <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Profile Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="position-relative">
+                            <img *ngIf="profilePicture; else defaultPic" [src]="profilePicture" class="rounded-circle"
+                                style="width: 100px; height: 100px; object-fit: cover;" alt="Profile Picture" />
+                            <ng-template #defaultPic>
+                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                    style="width: 100px; height: 100px; font-size: 2rem;">
+                                    {{ username[0] | uppercase }}
+                                </div>
+                            </ng-template>
+                            <label class="btn btn-sm btn-light btn-icon position-absolute bottom-0 end-0">
+                                <i class="bi bi-camera-fill"></i>
+                                <input type="file" hidden (change)="onProfilePictureSelected($event)" accept="image/*" />
+                            </label>
+                        </div>
+
+                        <div class="ms-4 flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <small class="text-muted">Username</small>
+                                    <h4 class="mb-0">{{ username }}</h4>
+                                </div>
+                                <button class="btn btn-sm btn-light btn-icon" data-bs-toggle="modal"
+                                        data-bs-target="#updateUsernameModal" title="Edit Username">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <small class="text-muted">Email</small>
+                                    <p class="mb-0">{{ email }}</p>
+                                </div>
+                                <button class="btn btn-sm btn-light btn-icon" data-bs-toggle="modal"
+                                        data-bs-target="#updateEmailModal" title="Edit Email">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </ng-template>
-                <div class="mt-3">
-                    <label class="btn btn-sm btn-primary">
-                        Upload Profile Picture
-                        <input type="file" hidden (change)="onProfilePictureSelected($event)" accept="image/*" />
-                    </label>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Security & Access</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <small class="text-muted">Password</small>
+                            <p class="mb-0">••••••••••••</p>
+                        </div>
+                        <button class="btn btn-outline-secondary rounded-pill" data-bs-toggle="modal"
+                                data-bs-target="#updatePasswordModal">
+                            Update Password
+                        </button>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Role</small>
+                            <p class="mb-0"><span class="badge bg-primary">{{ role }}</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">My Groups</h5>
+                </div>
+                <div class="card-body">
+                    <ng-container *ngIf="paginatedMyGroups.length; else noGroups">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center ps-0"
+                                *ngFor="let group of paginatedMyGroups">
+                                <div>
+                                    {{ group.group.name }}
+                                    <span class="badge rounded-pill bg-info text-dark ms-2">{{ group.permission }}</span>
+                                </div>
+                                <button class="btn btn-sm btn-icon" (click)="openGroupDetailsModal(group)"
+                                        data-bs-toggle="modal" data-bs-target="#accountGroupDetailsModal">
+                                    <i class="bi bi-three-dots"></i>
+                                </button>
+                            </li>
+                        </ul>
+                        <nav *ngIf="getTotalMyGroupsPages() > 1" class="d-flex justify-content-end mt-3">
+                            <ul class="pagination pagination-sm">
+                                <li class="page-item" [class.disabled]="myGroupsCurrentPage === 1">
+                                    <button class="page-link" (click)="changeMyGroupsPage(-1)">Previous</button>
+                                </li>
+                                <li class="page-item" [class.disabled]="myGroupsCurrentPage >= getTotalMyGroupsPages()">
+                                    <button class="page-link" (click)="changeMyGroupsPage(1)">Next</button>
+                                </li>
+                            </ul>
+                        </nav>
+                    </ng-container>
+                    <ng-template #noGroups>
+                        <p class="text-muted text-center"><em>You are not a member of any groups.</em></p>
+                    </ng-template>
                 </div>
             </div>
         </div>
 
-        <!-- Account Details -->
-        <div class="col-md-8">
-            <h2>{{ username }}</h2>
-            <div class="mt-2">
-                <button class="btn btn-primary rounded-pill px-3" data-bs-toggle="modal"
-                        data-bs-target="#updateUsernameModal">
-                    Update Username
-                </button>
-            </div>
-            <br>
-            <p><strong>Email:</strong> {{ email }}</p>
-            <div class="mt-2">
-                <button class="btn btn-primary rounded-pill px-3" data-bs-toggle="modal"
-                        data-bs-target="#updateEmailModal">
-                    Update Email
-                </button>
-            </div>
-            <br>
-            <p>
-                <strong>Roles:</strong>
-                <span *ngIf="role">
-                    <span class="badge bg-primary me-1">
-                        {{ role }}
-                    </span>
-                </span>
-            </p>
-            <div class="mt-3">
-                <strong>Groups:</strong>
-                <ng-container *ngIf="filteredGroups.length; else noGroups">
-                    <ul class="list-group mt-2">
-                        <li class="list-group-item d-flex justify-content-between align-items-center"
-                            *ngFor="let group of filteredGroups">
-                            {{ group.group }}
-                            <span class="badge rounded-pill bg-info text-dark">{{ group.permission }}</span>
-                        </li>
-                    </ul>
-                </ng-container>
-                <ng-template #noGroups>
-                    <p><em>None</em></p>
-                </ng-template>
-                <br>
-                <div class="mt-2">
-                    <button class="btn btn-primary rounded-pill px-3" data-bs-toggle="modal"
-                            data-bs-target="#updatePasswordModal">
-                        Update Password
-                    </button>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Account Management</h5>
                 </div>
-                <br>
-                <div class="mt-4 d-flex justify-content-center gap-3">
-                    <button class="btn btn-outline-success rounded-pill px-4" *ngIf="role == 'Super Admin'" (click)="createNewUser()">
-                        Create New User
+                <div class="list-group list-group-flush">
+                    <button class="list-group-item list-group-item-action text-success" *ngIf="role == 'Super Admin'"
+                            (click)="createNewUser()">
+                        <i class="bi bi-person-plus-fill me-2"></i>Create New User
                     </button>
-                </div>
-                <br>
-                <div class="mt-4 d-flex justify-content-center gap-3">
-                    <button class="btn btn-outline-danger rounded-pill px-4" (click)="logout()">
-                        Log out
+                    <button class="list-group-item list-group-item-action text-danger" (click)="logout()">
+                        <i class="bi bi-box-arrow-right me-2"></i>Log out
                     </button>
-
-                    <button class="btn btn-danger rounded-pill px-4" data-bs-toggle="modal"
-                        data-bs-target="#deleteAccountModal">
-                        Delete Account
+                    <button class="list-group-item list-group-item-action text-danger" data-bs-toggle="modal"
+                            data-bs-target="#deleteAccountModal">
+                        <i class="bi bi-trash me-2"></i>Delete Account
                     </button>
                 </div>
             </div>
@@ -171,4 +214,36 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="accountGroupDetailsModal" tabindex="-1" aria-labelledby="accountGroupDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" *ngIf="selectedGroup">
+      <div class="modal-header">
+        <h5 class="modal-title" id="accountGroupDetailsModalLabel">
+          Group Details: <strong>{{ selectedGroup.group.name }}</strong>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Your Permission:
+            <span class="badge bg-primary rounded-pill">{{ selectedGroup.permission }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Total Users:
+            <span class="badge bg-secondary rounded-pill">{{ selectedGroup.group.users.length }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Total Channels:
+            <span class="badge bg-secondary rounded-pill">{{ selectedGroup.group.channels.length }}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>

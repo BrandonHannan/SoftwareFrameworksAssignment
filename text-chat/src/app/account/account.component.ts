@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { AuthenticationService } from '../services/auth.service';
 import { AuthResult, RegisterAttempt, SessionStorageUser } from '../models/user.model';
 import { NotificationService } from '../services/notification.service';
+import { Group } from '../models/group.model';
+import { GroupService } from '../services/group.service';
 
 declare var bootstrap: any;
 
@@ -15,12 +17,13 @@ declare var bootstrap: any;
   styleUrl: './account.css'
 })
 export class Account implements OnInit{
+  private allGroups: Group[] = []; 
+  public groups: Group[] = [];
   public username: string = '';
   public newUsername: string | null = null;
   public email: string = '';
   public newEmail: string | null = null;
   public profilePicture: string | null = null;
-  public groups: string[] = [];
   public filteredGroups: any[] = [];
   private adminGroups: string[] = [];
   public newPassword: string = '';
@@ -30,18 +33,25 @@ export class Account implements OnInit{
   public newUserEmail: string = '';
   public newUserPassword: string = '';
 
-  constructor(private router: Router, private auth: AuthenticationService, private notification: NotificationService) {}
+  public myGroupsCurrentPage: number = 1;
+  public itemsPerPage: number = 10;
+  public paginatedMyGroups: any[] = [];
+
+  public selectedGroup: any = null;
+
+  constructor(private router: Router, private auth: AuthenticationService, private notification: NotificationService, private groupService: GroupService) {}
 
   async ngOnInit(): Promise<void> {
     const storedUserString = localStorage.getItem('Credentials');
     if (storedUserString) {
+      this.allGroups = await this.groupService.getAllGroups();
       const storedUser: SessionStorageUser = JSON.parse(storedUserString);
       const result: SessionStorageUser | null = await this.auth.getUserInfo(storedUser.username);
       if (result){
         this.username = result.username;
         this.email = result.email;
         this.profilePicture = result.profilePicture;
-        this.groups = result.groups.map(group => `${group.name}`);
+        this.groups = result.groups; 
         this.adminGroups = result.adminGroups.map(group => `${group.name}`);
         const foundHighestRole = result.roles.find(role => role == "SuperAdmin");
         if (foundHighestRole){
@@ -52,6 +62,7 @@ export class Account implements OnInit{
           this.role = "Group Admin | User";
         }
         this.filterGroups();
+        this.updateAllPaginatedLists(); 
       }
     }
     else{
@@ -170,18 +181,41 @@ export class Account implements OnInit{
       permission = "Super Admin";
     }
     for (var i: number = 0; i<this.groups.length; i++){
-      const foundGroup = this.adminGroups.find(group => group == this.groups[i]);
-      if (foundGroup){
-        this.filteredGroups.push({"group": this.groups[i], "permission": permission});
-      }
-      else{
-        if (permission == "Super Admin"){
-          this.filteredGroups.push({"group": this.groups[i], "permission": permission});
-        }
-        else {
-          this.filteredGroups.push({"group": this.groups[i], "permission": "User"});
+      const currentGroup = this.groups[i];
+      const fullGroupDetails = this.allGroups.find(g => g.id === currentGroup.id);
+      
+      if (fullGroupDetails) {
+        const isAdmin = this.adminGroups.includes(fullGroupDetails.name);
+        if (isAdmin) {
+          this.filteredGroups.push({ "group": fullGroupDetails, "permission": permission });
+        } else {
+          const userPermission = (permission === "Super Admin") ? "Super Admin" : "User";
+          this.filteredGroups.push({ "group": fullGroupDetails, "permission": userPermission });
         }
       }
     }
+  }
+
+  updateAllPaginatedLists(): void {
+    this.updatePaginatedMyGroups();
+  }
+
+  updatePaginatedMyGroups(): void {
+    const startIndex = (this.myGroupsCurrentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedMyGroups = this.filteredGroups.slice(startIndex, endIndex);
+  }
+
+  changeMyGroupsPage(pageChange: number): void {
+    this.myGroupsCurrentPage += pageChange;
+    this.updatePaginatedMyGroups();
+  }
+
+  getTotalMyGroupsPages(): number {
+    return Math.ceil(this.filteredGroups.length / this.itemsPerPage);
+  }
+
+  public openGroupDetailsModal(group: any): void {
+    this.selectedGroup = group;
   }
 }

@@ -35,6 +35,15 @@ export class Groups implements OnInit {
   public currentReport: any | null = null;
   public filteredReports: any[] = [];
 
+  public myGroupsCurrentPage: number = 1;
+  public allGroupsCurrentPage: number = 1;
+  public itemsPerPage: number = 10;
+
+  public paginatedMyGroups: any[] = [];
+  public paginatedAllGroups: any[] = [];
+
+  public selectedGroup: any = null;
+
   constructor(private router: Router, private groupService: GroupService, private auth: AuthenticationService,
     private notificationService: NotificationService
   ) { }
@@ -71,6 +80,7 @@ export class Groups implements OnInit {
       this.adminGroups = storedUser.adminGroups;
       this.filterGroups();
       this.filterReports();
+      this.updateAllPaginatedLists(); 
     }
     else {
       this.router.navigateByUrl('/login');
@@ -184,6 +194,12 @@ export class Groups implements OnInit {
         group: group.name
       };
       const result: boolean = await this.groupService.requestGroup(newRequest);
+      const modalElement = document.getElementById('groupDetailsModal');
+      if (modalElement) {
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        modal.hide();
+      }
+      this.reloadComponent();
     }
   }
 
@@ -246,6 +262,51 @@ export class Groups implements OnInit {
           this.filteredAllGroups.push({ "group": this.allGroups[i], "permission": "User" });
         }
       }
+    }
+  }
+
+  updateAllPaginatedLists(): void {
+    this.updatePaginatedMyGroups();
+    this.updatePaginatedAllGroups();
+  }
+
+  updatePaginatedMyGroups(): void {
+    const startIndex = (this.myGroupsCurrentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedMyGroups = this.filteredGroups.slice(startIndex, endIndex);
+  }
+
+  changeMyGroupsPage(pageChange: number): void {
+    this.myGroupsCurrentPage += pageChange;
+    this.updatePaginatedMyGroups();
+  }
+
+  getTotalMyGroupsPages(): number {
+    return Math.ceil(this.filteredGroups.length / this.itemsPerPage);
+  }
+
+  updatePaginatedAllGroups(): void {
+    const startIndex = (this.allGroupsCurrentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedAllGroups = this.filteredAllGroups.slice(startIndex, endIndex);
+  }
+  
+  changeAllGroupsPage(pageChange: number): void {
+    this.allGroupsCurrentPage += pageChange;
+    this.updatePaginatedAllGroups();
+  }
+
+  getTotalAllGroupsPages(): number {
+    return Math.ceil(this.filteredAllGroups.length / this.itemsPerPage);
+  }
+
+  public openGroupDetailsModal(group: any): void {
+    const isUserMember = this.groups.some(myGroup => myGroup.id === group.group.id);
+    if (isUserMember) {
+      this.selectedGroup = { ...group, isMember: true };
+    } 
+    else {
+      this.selectedGroup = { ...group, permission: 'None', isMember: false };
     }
   }
 }

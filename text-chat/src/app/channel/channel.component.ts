@@ -42,6 +42,11 @@ export class ChannelComponent implements OnInit {
 
   public newAddUser: SessionStorageUser | null = null;
 
+  public selectedChannel: any = null;
+  public channelsCurrentPage: number = 1;
+  public itemsPerPage: number = 10;
+  public paginatedChannels: any[] = [];
+
   constructor(private router: Router, private auth: AuthenticationService, private groupService: GroupService) { }
 
   async ngOnInit(): Promise<void> {
@@ -94,6 +99,7 @@ export class ChannelComponent implements OnInit {
         }
         this.filterChannels();
         this.filterUsers();
+        this.updatePaginatedChannels(); 
         localStorage.setItem('Credentials', JSON.stringify(storedUser));
       }
       else {
@@ -307,9 +313,29 @@ export class ChannelComponent implements OnInit {
         })
       }
     }
+    this.updatePaginatedChannels();
   }
 
   public updateUser(user: GroupUser): void {
     this.userUpdate = user;
+  }
+
+  public openChannelDetailsModal(channel: any): void {
+    this.selectedChannel = channel;
+  }
+
+  updatePaginatedChannels(): void {
+    const startIndex = (this.channelsCurrentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedChannels = this.filteredChannels.slice(startIndex, endIndex);
+  }
+
+  changeChannelsPage(pageChange: number): void {
+    this.channelsCurrentPage += pageChange;
+    this.updatePaginatedChannels();
+  }
+
+  getTotalChannelsPages(): number {
+    return Math.ceil(this.filteredChannels.length / this.itemsPerPage);
   }
 }
