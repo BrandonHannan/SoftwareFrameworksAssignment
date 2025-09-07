@@ -576,4 +576,33 @@ export class GroupService implements OnInit{
             return false;
         }
     }
+
+    public async sendMessage(message: Message): Promise<boolean> {
+        try {
+            const result: AuthResult = await lastValueFrom(this.http.post<AuthResult>(this.serverUrl + '/api/sendMessage', message));
+            if (result.valid){
+                const currentGroupInfo: Group = await this.getGroup(message.groupId);
+                const storedUserString: string | null = localStorage.getItem('Credentials');
+                const storedStateString: string | null = localStorage.getItem('State');
+                if (storedStateString && storedUserString){
+                    var storedUser: SessionStorageUser = JSON.parse(storedUserString);
+                    var storedState: State = JSON.parse(storedStateString);
+                    storedState.currentGroup = currentGroupInfo;
+                    const currentUserInfo: SessionStorageUser | null = await this.auth.getUserInfo(storedUser.username);
+                    if (currentUserInfo){
+                        storedUser = currentUserInfo;
+                    }
+                    localStorage.setItem('Credentials', JSON.stringify(storedUser));
+                    localStorage.setItem('State', JSON.stringify(storedState));
+                }
+                return true;
+            }
+            this.notificationService.show(`Unable to send message`, 'error');
+            return false;
+        }
+        catch(error){
+            this.notificationService.show(`Unable to send message`, 'error');
+            return false;
+        }
+    }
 }

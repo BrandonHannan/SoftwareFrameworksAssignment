@@ -8,6 +8,8 @@ import { State } from '../models/state.model';
 import { AuthenticationService } from '../services/auth.service';
 import { Group } from '../models/group.model';
 import { Message } from '../models/message.model';
+import { SocketService } from '../services/socket.service';
+import { Channel } from '../models/channel.model';
 
 @Component({
   selector: 'app-messages',
@@ -16,6 +18,8 @@ import { Message } from '../models/message.model';
   styleUrl: './messages.css'
 })
 export class Messages implements OnInit, OnDestroy {
+  public currentGroup: Group | null = null;
+  public currentChannel: Channel | null = null;
   public username: string = '';
   public profilePicture: string | null = '';
   public role: string | null = null;
@@ -24,7 +28,13 @@ export class Messages implements OnInit, OnDestroy {
   public messages: Message[] = [];
   public filteredMessages: any[] = [];
 
-  constructor(private router: Router, private groupService: GroupService, private auth: AuthenticationService) { }
+  newMessage = {
+    text: '',
+    image: undefined as string | undefined
+  };
+  ioConnection: any;
+
+  constructor(private router: Router, private groupService: GroupService, private auth: AuthenticationService, private socket: SocketService) { }
 
   async ngOnInit(): Promise<void> {
     const storedUserString: string | null = localStorage.getItem('Credentials');
@@ -56,6 +66,7 @@ export class Messages implements OnInit, OnDestroy {
           }
         }
         const group: Group = await this.groupService.getGroup(storedState.currentGroup.id);
+        this.currentGroup = group;
         storedState.currentGroup = group;
         const allowed = storedUser.allowedChannels.find(channel => channel.id == storedState.currentChannel!.id);
         if (!allowed && this.role == "User") {
@@ -65,6 +76,7 @@ export class Messages implements OnInit, OnDestroy {
         const currentUpdatedChannel = group.channels.find(channel => channel.id == storedState.currentChannel!.id);
         if (currentUpdatedChannel) {
           storedState.currentChannel = currentUpdatedChannel;
+          this.currentChannel = currentUpdatedChannel;
           this.messages = currentUpdatedChannel.messages;
         }
         else {
@@ -76,6 +88,16 @@ export class Messages implements OnInit, OnDestroy {
         localStorage.setItem('Credentials', JSON.stringify(storedUser));
         localStorage.setItem('State', JSON.stringify(storedState));
         this.loadMessages();
+        this.socket.initialiseSocket();
+        this.ioConnection = this.socket.getMessage().subscribe((message: any) => {
+          if (message.senderId == this.socket.clientId){
+            message.isOwnMessage = true;
+          }
+          else{
+            message.isOwnMessage = false;
+          }
+          this.filteredMessages.push(message);
+        });
       }
       else {
         this.router.navigateByUrl('/groups');
@@ -94,11 +116,6 @@ export class Messages implements OnInit, OnDestroy {
     // if they are the last one then the messages will be saved in the database
   }
 
-  newMessage = {
-    text: '',
-    image: undefined as string | undefined
-  };
-
   onImageSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
@@ -110,16 +127,30 @@ export class Messages implements OnInit, OnDestroy {
     reader.readAsDataURL(file);
   }
 
-  sendMessage() {
+  async sendMessage() {
     if (!this.newMessage.text && !this.newMessage.image) return;
 
-    this.filteredMessages.push({
+    const finalMessage: Message = {
       username: this.username,
-      profilePic: this.profilePicture,
-      text: this.newMessage.text,
-      image: this.newMessage.image,
-      isOwnMessage: true
-    });
+      profilePicture: this.profilePicture,
+      message: this.newMessage.text,
+      image: this.newMessage.image ? this.newMessage.image : "",
+      groupId: this.currentGroup!.id,
+      channelId: this.currentChannel!.id
+    }
+
+    const result: boolean = await this.groupService.sendMessage(finalMessage);
+    if (result){
+      const filteredMessage: any = {
+        username: this.username,
+        profilePic: this.profilePicture,
+        text: this.newMessage.text,
+        image: this.newMessage.image
+      }
+
+      this.socket.sendMessage(filteredMessage);
+    }
+
 
     this.newMessage.text = '';
     this.newMessage.image = undefined;
