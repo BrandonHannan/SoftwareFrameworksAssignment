@@ -1,22 +1,12 @@
 var express = require('express');
 const cors = require('cors');
 var app = express();
-const port = 3000;
-var http = require('http').Server(app);
-const connectDB = require('./database'); // Import the connectDB function
-
-const io = require('socket.io')(http,{
-    cors: {
-        origin: "http://localhost:4200",
-        methods: ["GET", "POST"],
-    }
-});
-const sockets = require('./socket.js');
 
 app.use(cors());
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use(express.static(__dirname + '/'));
+
 
 app.post('/api/login', require('./api/auth/login'));
 app.post('/api/register', require('./api/auth/signup'));
@@ -47,17 +37,50 @@ app.get('/api/get/allGroups', require('./api/groups/getAllGroups'));
 app.get('/api/get/userInfo', require('./api/users/getUserInfo'));
 app.get('/api/getAllUsers', require('./api/users/getAllUsers'));
 
-async function startServer() {
-    try {
-        await connectDB();
-        sockets.connect(io, port);
-        http.listen(port, () => {
-            console.log(`Server listening on port ${port}`);
-        });
-    } catch (e) {
-        console.error("Failed to start server:", e);
-        process.exit(1);
-    }
-}
+module.exports = app;
 
-startServer();
+if (require.main === module) {
+    const https = require('https');
+    const fs = require('fs');
+    const { ExpressPeerServer } = require('peer');
+    const port = 3000;
+
+    const sockets = require('./socket.js');
+    const connectDB = require('./database'); // Import the connectDB function
+
+    const httpsServer = https.createServer({
+        key: fs.readFileSync('./key.pem'),
+        cert: fs.readFileSync('./cert.pem'),
+    }, app);
+
+    const io = require('socket.io')(httpsServer,{
+        path: "/socket.io/", 
+        cors: {
+            origin: "http://localhost:4200",
+            methods: ["GET", "POST"],
+            credentials: true
+        }
+    });
+
+    const peerServer = ExpressPeerServer(httpsServer, {
+        debug: true,
+        path: '/video-chat'
+    });
+
+    app.use('/peerjs', peerServer);
+    async function startServer() {
+        try {
+            await connectDB();
+            sockets.connect(io, port);
+            httpsServer.listen(port, () => {
+                console.log(`Server listening on port ${port}`);
+            });
+        }
+        catch (e) {
+            console.error("Failed to start server:", e);
+            process.exit(1);
+        }
+    }
+
+    startServer();
+}
