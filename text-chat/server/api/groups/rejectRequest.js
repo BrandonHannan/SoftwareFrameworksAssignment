@@ -10,11 +10,20 @@ module.exports = async function(req, res) {
     try {
         const db = await connectDB();
         const result = await db.collection('db').updateOne(
-            { },
             { 
+                // Find the user who has the specific request in their "requests" array
+                "users.requests": { 
+                    $elemMatch: { 
+                        username: request.username, 
+                        groupId: request.groupId 
+                    } 
+                } 
+            },
+            { 
+                // Pull from the array of the user that was matched in the filter above
                 $pull: { 
-                    "users.$[].requests": { 
-                        username: request.username,
+                    "users.$.requests": { 
+                        username: request.username, 
                         groupId: request.groupId 
                     } 
                 } 
