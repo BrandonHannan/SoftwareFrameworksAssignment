@@ -1,0 +1,35 @@
+.remote-video {
+  position: relative;
+  width: 100%;
+  background: black;
+  min-height: 300px;
+  max-height: 78vh;
+}
+
+.remote-video.has-stream {
+  background: transparent;
+}
+
+.remote-video .remote {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.local-video {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 30%;                /* local video = 25% of remote container */
+  max-width: 250px;          /* optional cap */
+  aspect-ratio: 16/9;        /* keeps video aspect ratio */
+  border: 2px solid #fff;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.local-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
