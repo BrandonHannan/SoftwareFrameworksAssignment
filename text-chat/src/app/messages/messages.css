@@ -20,9 +20,9 @@
   position: absolute;
   bottom: 10px;
   right: 10px;
-  width: 30%;                /* local video = 25% of remote container */
-  max-width: 250px;          /* optional cap */
-  aspect-ratio: 16/9;        /* keeps video aspect ratio */
+  width: 30%;
+  max-width: 250px;
+  aspect-ratio: 16/9;
   border: 2px solid #fff;
   border-radius: 0.5rem;
   overflow: hidden;
