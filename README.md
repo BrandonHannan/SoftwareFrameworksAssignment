@@ -135,7 +135,7 @@ The frontend is constructed with a component-based architecture where each compo
 - `Home.component`: Displays a home page for users who have not logged in to gain information about the web application.
 - `Groups.component`: Displays all the groups that logged-in user have access to and also displays all the groups that are within the database for the user to request access to if they do not have access to it currently. Additionally, administrative lists for requests to groups and reports for users are shown for users with the respective roles and permissions.
 - `Channel.component`: Displays all the channels that the user has access to within the user specified group. For admin users, it also displays the list of users within group and provides them the functionality to add/report/ban/delete users to the given group and to add/remove users from specified channels within the group.
-- `Message.component`: Displays a text chat for the user given their current group and channel that they have specified. This text chat allows them to send text messages and images and loads the previous messages of the given channel and group.
+- `Message.component`: Displays a text chat for the user given their current group and channel that they have specified. This text chat allows them to send text messages and images and loads the previous messages of the given channel and group. It also includes a video chat button which allows user to enter a video chat with other users within the same group and channel. This will allow the user to call another user who is active in the video chat.
 - `Login.component`: Displays a form that allows users to enter their user credentials which include their email, username and password to access the web application.
 - `Register.component`: Displays a form that only allows users with the role 'SuperAdmin' to create a new user given an email, username and password. 
 - `Account.component`: Displays the user's current credentials such as email, username, profile picture and the groups that they are within. It also provides them the functionality to logout, delete their account and create new accounts (redirect to the register component) if the user is a 'SuperAdmin'.
@@ -145,6 +145,8 @@ The frontend is constructed with a component-based architecture where each compo
 Services are used to handle shared logic, data manipulation and communication with the backend Node.js and Express.js server (APIs).
 - `AuthenticationService`: Manages user login, creation, logout, account deletion, updating and fetching a user's information. It is also responsible for storing and retrieving user credentials from the browsers local storage.
 - `GroupService`: Manages all group, channel and message related operations. It is responsible for fetching, creating, deleting, managing user memberships within groups/channels/messages and stores and retrieves the current state (current group and current channel that the user is attempting access) of the web application from the browser's local storage.
+- `SocketService`: Manages the socket connection for a user, allowing them to send/receive messages and join a video chat room.
+- `VideoChatService`: Manages the local video and audio stream of the user and the remote video and audio stream of another user within a video chat utilising PeerJS.
 - `NotificationService`: Provides a method to display notifications of success and error messages to the user across the web application.
 
 ---
@@ -319,8 +321,10 @@ Seed Base Data .json Document:
 ### Architecture Overview
 - `Server.js`: The main entry point of the server. It sets up the Express application and configures middleware such as cors and Express.json to injest `.json` files and more importantly defines the API routes and functionalities. 
 - `Database.js`: A module that that defines and contains the logic to connecting to the MongoDB database. It exports a function that the route handlers use to get a database instance.
+- `Socket.js`: A module that defines the socket rooms that users can enter or leave. It handles emitting messages, joining channels and video chat rooms. It exports a function that the server can use with the specified port and input and output defined by `sockets.io`.
 - `Seed.js`: A module that inserts the seed data into the MongoDB database if it is currently empty.
-- `/api` directory: Contains individual Javascript files for each API route handler for logging in, creating a new user, deleting a user, adding a user to a group, creating a group, getting user information, making a request to enter a group, reporting another user and more. E.g. `login.js`, `createUser.js`
+- `/api` directory: Contains individual Javascript files for each API route handler for logging in, creating a new user, deleting a user, adding a user to a group, creating a group, getting user information, making a request to enter a group, reporting another user and more. E.g. `login.js`, `createUser.js`.
+- `/integrationTest` directory: Contains a `test.js` file that contains all the integration tests that test the routes and server logic. 
 
 
 ### Server API Routes (REST API)
@@ -371,6 +375,13 @@ The following table possesses the information of the REST API endpoints that the
 |--------|-------------------|-------------------------------------------------------|---------------------|----------------------------|
 | POST   | /api/reportUser   | Adds a report to the reports list of all SuperAdmins. | Report object       | 200 OK with { valid: true }|
 | POST   | /api/acceptReport | Bans a user from a group and cleans up related data.  | Report object       | 200 OK with { valid: true }|
+
+<br><br>
+<strong>Messages API Endpoints:</strong>
+| Method | Route             | Description                                           | Request Body/Params | Success Response           |
+|--------|-------------------|-------------------------------------------------------|---------------------|----------------------------|
+| POST   | /api/sendMessage   | Adds a message to the messages array of a specified channel within a specified group | Message object       | 200 OK with { valid: true }|
+
 
 ## Client-Server Interaction
 <small><small>Note: Not all interaction flows will be documented as there are too many and only the main interaction flows will be described</small></small> <br></br>
@@ -511,3 +522,56 @@ The following table possesses the information of the REST API endpoints that the
     - HTTP Response: The server returns a 200 OK response with { valid: true }.
 
 6. Client Update: The ChannelComponent reloads. In the list of group members, the promoted user's role badge is updated to "GroupAdmin" or "SuperAdmin" if selected.
+
+<strong>Entering a Video Chat</strong>
+1. Client (Angular): A user, selects a group and then selects a channel to enter messages component. Then they select the "Enter Video Chat" button and it opens up a modal that displays their current camera display and a list of users within the same channel that are currently connected to "call". They select the "call" button for a specified connected user.
+
+2. Service: 
+    - The `VideoChatService` handles the "call" request and gets the incoming remote video and audio stream from the `join-video-chat` socket room given the remotePeerId. 
+    - Then it accepts the incoming remote video and audio using PeerJS and then sets up a subscriber for its observers to reflect the changes.
+    - Lastly it exposes the video and audio observers to the `Messages` component. 
+
+3. Client Update: The Message Component displays the live remote video and audio stream changes from the exposed observers from the `VideoChatService`.
+
+<br>
+
+## Testing and Coverage
+### Frontend (Angular)
+
+<strong>Testing Frameworks</strong>
+
+- Karma and Jasmine for unit tests
+- Angular TestBed for component/service testing
+- HTTP mock calls were made utilising `HTTPTestingController`
+
+<strong>What was Tested</strong>  
+
+Services:  
+- `AuthenticationService`  
+- `GroupService`  
+- `VideoChatService`  
+
+Components:  
+- `Messages`  
+- `Login`  
+- `Groups`  
+- `Channel`  
+- `Account`  
+
+<strong>Coverage</strong>  
+<small>Using the command: `ng test --code-coverage`</small>  
+<img src="./text-chat/public/images/Frontend Tests.png">  
+
+### Backend (Node.js/Express)
+<strong>Testing Frameworks</strong>
+- Cypress
+
+<strong>What was Tested</strong>
+- User registration and login, getting user information, updating user information and deleting a user's account
+- Group creation/deletion, getting all the groups in the database, getting a groups information and adding/removing a user from a group
+- Request creation/rejection/acceptance 
+- Channel creation/deletion, banning a user from a channel and adding a user to a channel
+
+<strong>Coverage</strong>  
+<small>Using the command: `npm run coverage`</small>  
+<img src="./text-chat/public/images/Backend Tests.png">  
