@@ -9,7 +9,7 @@ import { Report } from '../models/report.model';
   providedIn: 'root'
 })
 export class AuthenticationService {
-    private serverUrl = 'http://localhost:3000';
+    private serverUrl = 'https://localhost:3000';
     constructor(private http: HttpClient, private notificationService: NotificationService) { }
 
     async login(user: LoginAttempt): Promise<AuthResult> {
@@ -290,11 +290,11 @@ export class AuthenticationService {
                 this.notificationService.show(`User ${report.usernameReported} has been banned from the group`, 'success'); 
                 return true;
             }
-            this.notificationService.show(`Unable to ban user ${report.usernameReported} from the group`, 'success'); 
+            this.notificationService.show(`Unable to ban user ${report.usernameReported} from the group`, 'error'); 
             return false;
         }
         catch (error) {
-            this.notificationService.show(`Unable to ban user ${report.usernameReported} from the group`, 'success'); 
+            this.notificationService.show(`Unable to ban user ${report.usernameReported} from the group`, 'error'); 
             return false;
         }
     }

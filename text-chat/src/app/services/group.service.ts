@@ -18,7 +18,7 @@ export class GroupService implements OnInit{
     private currentGroup: Group | null = null;
     private currentChannel: Channel | null = null;
     private messages: Message[] | null = null;
-    private serverUrl = 'http://localhost:3000';
+    private serverUrl = 'https://localhost:3000';
     constructor(private http: HttpClient, private notificationService: NotificationService, 
         private auth: AuthenticationService) { }
 
@@ -105,7 +105,7 @@ export class GroupService implements OnInit{
                 if (result.valid && result.group){
                     this.currentGroup = result.group;
                     state.currentGroup = result.group;
-                    const currentUpdatedChannel: Channel | undefined = result.group.channels.find(channel => channel.id == channel.id);
+                    const currentUpdatedChannel: Channel | undefined = result.group.channels.find(c => c.id == channel.id);
                     if (currentUpdatedChannel){
                         this.currentChannel = currentUpdatedChannel;
                         state.currentChannel = currentUpdatedChannel;
@@ -165,10 +165,6 @@ export class GroupService implements OnInit{
 
     public getMessages(): Message[] | null {
         return this.messages;
-    }
-
-    private async updateMessages(newMessage: Message): Promise<void> {
-        return;
     }
 
     public async rejectRequest(request: Request): Promise<boolean> {
