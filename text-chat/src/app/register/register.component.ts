@@ -13,6 +13,7 @@ import { NotificationService } from '../services/notification.service';
   styleUrl: './register.css'
 })
 export class Register implements OnInit{
+  // Stores the user's inputted information
   public email: string = '';
   public username: string = '';
   public password: string = '';
@@ -21,6 +22,7 @@ export class Register implements OnInit{
   constructor(private router: Router, private auth: AuthenticationService, private notificationService: NotificationService) {}
   ngOnInit(): void {
     const storedUserString = localStorage.getItem('Credentials');
+    // Checks if the user that is attempting to create an account has the permission to do so
     if (storedUserString) {
       const storedUser: SessionStorageUser = JSON.parse(storedUserString);
       const foundHighestRole = storedUser.roles.find(role => role == "SuperAdmin");
@@ -34,6 +36,7 @@ export class Register implements OnInit{
     }
   }
 
+  // Creates the new account
   public async checkSignUp(): Promise<void> {
     if (!this.username || !this.password || !this.email){
       this.errorMessage = 'Please enter details for all fields';
