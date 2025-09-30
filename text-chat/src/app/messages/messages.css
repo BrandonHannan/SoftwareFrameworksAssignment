@@ -4,10 +4,20 @@
   background: black;
   min-height: 300px;
   max-height: 78vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .remote-video.has-stream {
   background: transparent;
+}
+
+.no-video-message {
+  position: absolute;
+  color: #6c757d;
+  font-size: 1.1rem;
+  pointer-events: none;
 }
 
 .remote-video .remote {

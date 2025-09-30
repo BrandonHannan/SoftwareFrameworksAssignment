@@ -58,6 +58,9 @@
                     <div class="col-md-9">
                         <div class="video-container remote-video mb-2">
                             <video #remoteVideo class="w-100 rounded bg-black" autoplay playsinline></video>
+                            <div *ngIf="!isCallActive()" class="no-video-message">
+                                <span>No Active Connection</span>
+                            </div>
                             <div class="local-video">
                                 <video #localVideo class="rounded bg-black" autoplay playsinline muted></video>
                             </div>
