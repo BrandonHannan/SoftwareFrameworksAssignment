@@ -3,11 +3,13 @@ const cors = require('cors');
 var app = express();
 
 app.use(cors());
+// Extends the limit of request body's to 100mb
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use(express.static(__dirname + '/'));
 
 
+// API Routes
 app.post('/api/login', require('./api/auth/login'));
 app.post('/api/register', require('./api/auth/signup'));
 app.post('/api/createGroup', require('./api/groups/createGroup'));
@@ -39,6 +41,7 @@ app.get('/api/getAllUsers', require('./api/users/getAllUsers'));
 
 module.exports = app;
 
+// Checks if the file is being run directly with 'node server.js'
 if (require.main === module) {
     const https = require('https');
     const fs = require('fs');
@@ -48,6 +51,7 @@ if (require.main === module) {
     const sockets = require('./socket.js');
     const connectDB = require('./database'); // Import the connectDB function
 
+    // Ensures a https connection with the self signed key and certification files created
     const httpsServer = https.createServer({
         key: fs.readFileSync('./key.pem'),
         cert: fs.readFileSync('./cert.pem'),
@@ -62,6 +66,7 @@ if (require.main === module) {
         }
     });
 
+    // Creates a PeerJS server called video chat
     const peerServer = ExpressPeerServer(httpsServer, {
         debug: true,
         path: '/video-chat'
