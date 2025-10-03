@@ -12,6 +12,7 @@ export class AuthenticationService {
     private serverUrl = 'https://localhost:3000';
     constructor(private http: HttpClient, private notificationService: NotificationService) { }
 
+    // Checks if login credentials are valid and updates local storage if true
     async login(user: LoginAttempt): Promise<AuthResult> {
         try {
             const result: UserResult = await lastValueFrom(this.http.post<UserResult>(this.serverUrl + '/api/login', user));
@@ -46,11 +47,13 @@ export class AuthenticationService {
         }
     }
 
+    // Clears local and session storage so the user is no longer signed in
     logout(): void {
         sessionStorage.clear();
         localStorage.clear();
     }
 
+    // Creates a new user in the database using the new provided email, username and password
     async register(user: RegisterAttempt): Promise<AuthResult> {
         try {
             const result: UserResult = await lastValueFrom(this.http.post<UserResult>(this.serverUrl + '/api/register', user));
@@ -69,6 +72,8 @@ export class AuthenticationService {
         }
     }
 
+    // Erases the account by checking if the account exists and if it does then it is removed from the database
+    // and the local storage is cleared if the deleted account is the given user
     async deleteAccount(user: SessionStorageUser): Promise<AuthResult> {
         try {
             const result: AuthResult = await lastValueFrom(this.http.delete<AuthResult>(this.serverUrl + '/api/deleteAccount', {
@@ -95,6 +100,9 @@ export class AuthenticationService {
         }
     }
 
+    // Updates a user's username given a new provided username
+    // Cannot update a user's username if the username is taken
+    // Updates the local storage with the new username
     async updateUsername(user: UpdateUsername): Promise<AuthResult> {
         try {
             const result: AuthResult = await lastValueFrom(this.http.patch<AuthResult>(this.serverUrl + '/api/updateUser/username', user));
@@ -118,6 +126,7 @@ export class AuthenticationService {
         }
     }
 
+    // Updates a user's password with a new provided password
     async updatePassword(user: UpdatePassword): Promise<AuthResult> {
         try {
             const result: AuthResult = await lastValueFrom(this.http.patch<AuthResult>(this.serverUrl + '/api/updateUser/password', user));
@@ -135,6 +144,7 @@ export class AuthenticationService {
         }
     }
 
+    // Updates a user's email with a new provided email
     async updateEmail(user: UpdateEmail): Promise<AuthResult> {
         try {
             const result: AuthResult = await lastValueFrom(this.http.patch<AuthResult>(this.serverUrl + '/api/updateUser/email', user));
@@ -158,6 +168,7 @@ export class AuthenticationService {
         }
     }
 
+    // Updates a user's groups so it updates the groups that they are apart of and updates the local storage of this change
     async updateGroups(user: UpdateGroups): Promise<AuthResult> {
         try {
             const result: AuthResult = await lastValueFrom(this.http.patch<AuthResult>(this.serverUrl + '/api/updateUser/groups', user));
@@ -181,6 +192,8 @@ export class AuthenticationService {
         }
     }
 
+    // Updates the admin groups of the given user so the groups that they have admin priviledges 
+    // and updates the local storage of this change
     async updateAdminGroups(user: UpdateAdminGroups): Promise<AuthResult> {
         try {
             const result: AuthResult = await lastValueFrom(this.http.patch<AuthResult>(this.serverUrl + '/api/updateUser/adminGroups', user));
@@ -204,6 +217,7 @@ export class AuthenticationService {
         }
     }
 
+    // Updates a user's profile with a new provided profile picture (byte string array)
     async updateProfilePicture(user: UpdateProfilePicture): Promise<AuthResult> {
         try {
             const result: AuthResult = await lastValueFrom(this.http.patch<AuthResult>(this.serverUrl + '/api/updateUser/profilePicture', user));
@@ -227,6 +241,9 @@ export class AuthenticationService {
         }
     }
 
+    // Gets a user's information (id, username, email, profile picture, roles, groups that they apart of, groups they administer,
+    // requests to join a group they administer, allowed channels within groups they are apart of and the reports for groups
+    // they administer) given a user's username
     async getUserInfo(username: string): Promise<SessionStorageUser | null> {
         try {
             const result: UserResult = await lastValueFrom(this.http.get<UserResult>(this.serverUrl + '/api/get/userInfo', {
@@ -256,6 +273,7 @@ export class AuthenticationService {
         }
     }
 
+    // Gets all the users in the database and returns them in an array
     public async getAllUsers(): Promise<SessionStorageUser[] | null> {
         try {
             const result: SessionStorageUser[] | null = await lastValueFrom(this.http.get<SessionStorageUser[] | null>(
@@ -273,6 +291,8 @@ export class AuthenticationService {
         }
     }
 
+    // Deletes the report from the database and removes the reported user from the given group
+    // Updates the local storage of the removed report
     public async acceptReport(report: Report): Promise<boolean> {
         try {
             const result: AuthResult = await lastValueFrom(this.http.post<AuthResult>(this.serverUrl + '/api/acceptReport',

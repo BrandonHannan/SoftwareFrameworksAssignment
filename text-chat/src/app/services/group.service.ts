@@ -15,13 +15,14 @@ import { AuthenticationService } from './auth.service';
   providedIn: 'root'
 })
 export class GroupService implements OnInit{
+    // Currently selected group, channel and messages 
     private currentGroup: Group | null = null;
     private currentChannel: Channel | null = null;
-    private messages: Message[] | null = null;
     private serverUrl = 'https://localhost:3000';
-    constructor(private http: HttpClient, private notificationService: NotificationService, 
-        private auth: AuthenticationService) { }
 
+    constructor(private http: HttpClient, private notificationService: NotificationService, private auth: AuthenticationService) { }
+
+    // Creates a state object in local storage of the user's currently selected group and channel
     ngOnInit(): void {
         const storedState: string | null = localStorage.getItem('State');
         if (storedState){
@@ -33,12 +34,16 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Returns the currently selected group
     public getCurrentGroup(): Group | null {
         return this.currentGroup;
     }
 
+    // Changes the currently selected group for the user by getting the latest information of the selected group and 
+    // updating the local storage with this group info
     public async setCurrentGroup(id: number): Promise<boolean> {
         const storedState: string | null = localStorage.getItem('State');
+        // Updates the stored state with the new selected group
         if (storedState){
             try {
                 const request = {"id": id};
@@ -62,7 +67,7 @@ export class GroupService implements OnInit{
                 return false;
             }
         }
-        else{
+        else{ // Creates a new stored state with the new selected group if it didn't exist
             try {
                 const request = {"id": id};
                 const result: GroupResult = await lastValueFrom(this.http.get<GroupResult>(this.serverUrl + '/api/get/group', {
@@ -89,12 +94,16 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Returns the current selected channel of the user
     public getCurrentChannel(): Channel | null {
         return this.currentChannel;
     }
 
+    // Changes the currently selected channel with the latest information of the channel and updates the local
+    // storage with this new info
     public async setCurrentChannel(channel: Channel): Promise<boolean> {
         const storedState: string | null = localStorage.getItem('State');
+        // Updates the local storage state with the new selected channel
         if (storedState){
             try {
                 const request = {"id": channel.groupId};
@@ -127,7 +136,7 @@ export class GroupService implements OnInit{
                 return false;
             }
         }
-        else{
+        else{ // Creates a new stored state in local storage if there was none with the new selected channel and the respective group
             try {
                 const request = {"id": channel.groupId};
                 const result: GroupResult = await lastValueFrom(this.http.get<GroupResult>(this.serverUrl + '/api/get/group', {
@@ -160,13 +169,9 @@ export class GroupService implements OnInit{
                 return false;
             }
         }
-        // Update messages
     }
 
-    public getMessages(): Message[] | null {
-        return this.messages;
-    }
-
+    // Deletes the request made from the user from the database and updates the local storage with the deleted request
     public async rejectRequest(request: Request): Promise<boolean> {
         const req: any = {
             "username": request.username,
@@ -200,6 +205,8 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Deletes the request made from a user from the database, adds the user to requested group and updates the local storage
+    // with the removed request and the user now in the group
     public async acceptRequest(request: Request): Promise<boolean> {
         const req: any = {
             "username": request.username,
@@ -232,6 +239,8 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Creates a request from the user to a given group and adds it to the database
+    // The request is added to all 'SuperAdmin' users and 'GroupAdmin' users who administer the requested group
     public async requestGroup(request: Request): Promise<boolean> {
         try {
             const result: AuthResult = await lastValueFrom(this.http.post<AuthResult>(this.serverUrl + '/api/requestGroup', request));
@@ -250,6 +259,8 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Deletes the group from the database and updates the stored state in local storage if the currently selected group
+    // is the deleted group and the user's groups and admin groups arrays 
     public async removeGroup(id: number): Promise<boolean> {
         try{
             const result: AuthResult = await lastValueFrom(this.http.delete<AuthResult>(this.serverUrl + '/api/removeGroup', {
@@ -260,7 +271,6 @@ export class GroupService implements OnInit{
                     if (this.currentGroup.id == id){
                         this.currentGroup = null;
                         this.currentChannel = null;
-                        this.messages = null;
                         const storedStateString: string | null = localStorage.getItem('State');
                         if (storedStateString){
                             var storedState: State = JSON.parse(storedStateString);
@@ -290,6 +300,8 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Returns all the groups found within the database and updates the local storage of the user if they are a 
+    // 'SuperAdmin' as they administer all groups
     public async getAllGroups(): Promise<Group[]> {
         try {
             const result: GroupsResult = await lastValueFrom(this.http.get<GroupsResult>(this.serverUrl + '/api/get/allGroups'));
@@ -313,6 +325,7 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Adds a new group to the database and adds the new group to the user's local storage with the new group
     public async createNewGroup(group: string, username: string, role: string): Promise<boolean> {
         try {
             const result: GroupResult = await lastValueFrom(this.http.post<GroupResult>(this.serverUrl + '/api/createGroup', {
@@ -338,6 +351,7 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Returns the latest information about a group from the database given the group's id
     public async getGroup(id: number): Promise<Group> {
         try {
             const request = {"id": id};
@@ -358,6 +372,7 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Creates a new report for a given user in the database and adds the report to all 'SuperAdmin' users reports array
     public async reportUser(user: GroupUser, adminUsername: string, adminProfilePicture: string | null, groupId: number): Promise<boolean> {
         try {
             const request: Report = {
@@ -381,6 +396,9 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Deletes a user from a group, it removes the group from the user's groups array and removes the user from the group
+    // in the database
+    // Updates the local storage of the user if they were the one who is removed from the group
     public async removeUserFromGroup(user: GroupUser, groupId: number): Promise<boolean> {
         try {
             const {profilePicture, ...newUser} = user;
@@ -410,6 +428,7 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Removes the user from a channel by deleting the channel from the user's allowed channels array in the database
     public async banUserFromChannel(channel: Channel, user: GroupUser): Promise<boolean> {
         try {
             const request: any = {
@@ -432,6 +451,7 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Adds the given user to the channel's users array in the respective group in the database
     public async addUserToChannel(channel: Channel, user: GroupUser): Promise<boolean> {
         try {
             const request: any = {
@@ -455,6 +475,7 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Adds the new role to the user's roles array in the database if it is not already in the roles array
     public async promoteUser(user: GroupUser, role: string, groupId: number): Promise<boolean> {
         try {
             const request: any = {
@@ -476,6 +497,8 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Adds a new channel in the given group within its channels array and updates the local storage of the updated group
+    // with the newly added channel
     public async createChannel(channelName: string, group: Group): Promise<boolean> {
         try {
             const request: any = {
@@ -503,6 +526,8 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Deletes the channel from the channels array of the given group and all allowed channels arrays within user's information
+    // Updates the group and channel (if it is the deleted channel) in local storage with the removed channel
     public async removeChannel(groupId: number, channelId: number): Promise<boolean> {
         try{
             const request: any = {
@@ -520,6 +545,11 @@ export class GroupService implements OnInit{
                     var storedUser: SessionStorageUser = JSON.parse(storedUserString);
                     var storedState: State = JSON.parse(storedStateString);
                     storedState.currentGroup = currentGroupInfo;
+                    if (storedState.currentChannel){
+                        if (storedState.currentChannel.id == channelId){
+                            storedState.currentChannel = null;
+                        }
+                    }
                     const currentUserInfo: SessionStorageUser | null = await this.auth.getUserInfo(storedUser.username);
                     if (currentUserInfo){
                         storedUser = currentUserInfo;
@@ -539,6 +569,9 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Adds a new user to the given group by adding the user to the group's users array in the database and adding the group
+    // to the user's groups array
+    // Updates the local storage of the user of the updated group
     public async addNewUser(groupId: number, user: SessionStorageUser): Promise<boolean> {
         try {
             const request: any = {
@@ -573,6 +606,9 @@ export class GroupService implements OnInit{
         }
     }
 
+    // Creates a new message in the messages array within a channel that is within a given group, it propogates this changed group
+    // to all groups arrays for all users
+    // Updates the local storage with the updated group
     public async sendMessage(message: Message): Promise<boolean> {
         try {
             const result: AuthResult = await lastValueFrom(this.http.post<AuthResult>(this.serverUrl + '/api/sendMessage', message));
