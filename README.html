@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>README.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="softwareframeworksassignment">SoftwareFrameworksAssignment</h1>
+<h1 id="textvideo-system-documentation">Text/Video System Documentation</h1>
+<h2 id="introduction">Introduction</h2>
+<p>This document outlines the design, structure, architecture of a real-time text/video chat application built using the MEAN stack. It also includes the purpose and use cases of components such as login and permission features depending on user authority, project's version control, data structures utilised to organise backend data and detailed API reference. The system allows users to be allocated into groups where there exists some channels where they will be able to communicate within. There is a three-tiered permission system: User, Group Admin and Super Admin.</p>
+<hr>
+<h2 id="git-repository-and-version-control">Git Repository and Version Control</h2>
+<h3 id="repository-structure">Repository Structure</h3>
+<p>The Git repository is structured into one main directory named &quot;text-chat'. This directory includes all the frontend code (Entire Angular Application) but it also contains another directory named &quot;server&quot; which contains the Node.js and Express.js server application to keep the frontend and backend codebases separate and organized:</p>
+<ul>
+<li><code>/text-chat</code>: Contains the entire Angular application including the backend server.</li>
+<li><code>/text-chat/server</code>: Contains the Node.js and Express.js server application.
+The <code>node_modules</code> directories for both are included in the <code>.gitignore</code> file to prevent them from being committed to the repository.
+Additionally, there is .env configuration file that includes the MONGODB_URI which is included in the <code>.gitignore</code> file to prevent the MongoDB username and password from being leaked.</li>
+</ul>
+<h3 id="branching-strategy">Branching Strategy</h3>
+<p>The project followed a seperated environment inspired branching strategy. A <code>main</code> branch holds the stable and working project, while the <code>develop</code> branch holds new changes and features to be integrated into <code>main</code> once fully functional. For instance, when developing the <code>groups</code>, <code>channels</code> and <code>messages</code> component, the <code>groups</code> component was developed first and then merged into main once fully functional and once the <code>channels</code> component was synchronised and functional with the <code>groups</code> component it was then merged into main and so forth (as each component was dependent on another).</p>
+<h3 id="commit-frequency">Commit Frequency</h3>
+<p>Commits were made frequently, generally each commit holds a small modularised piece of work or feature such as developing the API endpoint for logging in a user. Each commit message succinctly describes the work completed.</p>
+<hr>
+<h2 id="data-structures">Data Structures</h2>
+<p>The application's data is modeled and defined on the client side using TypeScript interfaces, where the server side follows these models when passing or accepting data to ensure type safety and consistency. The primary data models are as follows:</p>
+<h3 id="user">User</h3>
+<p>The <code>User</code> model represents a registered user in the system. It contains their credentials, permissions, and relationships to groups.</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> User {
+    id: <span class="hljs-built_in">number</span>;
+    username: <span class="hljs-built_in">string</span>;
+    email: <span class="hljs-built_in">string</span>;
+    profilePicture: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    roles: <span class="hljs-built_in">string</span>[]; <span class="hljs-comment">// e.g., ["User", "GroupAdmin"]</span>
+    password: <span class="hljs-built_in">string</span>; <span class="hljs-comment">// This is hashed in a real-world scenario but not in this project</span>
+    groups: Group[];
+    adminGroups: Group[];
+    requests: Request[]; <span class="hljs-comment">// Holds the requests from users that desire to enter a group</span>
+    allowedChannels: Channel[];
+    reports: Report[]; <span class="hljs-comment">// Holds the reports made from other Group Admins made about a User within a group</span>
+}
+
+<span class="hljs-comment">// A smaller version for displaying users within a group</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> GroupUser {
+    username: <span class="hljs-built_in">string</span>;
+    profilePicture: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    role: <span class="hljs-built_in">string</span>; <span class="hljs-comment">// The user's role specifically within that group</span>
+}
+
+<span class="hljs-comment">// A secure version for client-side storage, omitting the password</span>
+<span class="hljs-comment">// An object of this model is stored in the browser's local storage to check if a user is logged in</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> SessionStorageUser {
+    id: <span class="hljs-built_in">number</span>;
+    username: <span class="hljs-built_in">string</span>;
+    email: <span class="hljs-built_in">string</span>;
+    profilePicture: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    roles: <span class="hljs-built_in">string</span>[];
+    groups: Group[];
+    adminGroups: Group[];
+    requests: Request[];
+    allowedChannels: Channel[];
+    reports: Report[];
+}
+
+</div></code></pre>
+<p>The <code>Group</code> model represents an established group in the system. It contains the users that are allowed in the group, the channels and the name of the group.</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> Group {
+    id: <span class="hljs-built_in">number</span>;
+    name: <span class="hljs-built_in">string</span>;
+    users: GroupUser[];
+    channels: Channel[];
+}
+</div></code></pre>
+<p>The <code>Channel</code> model represents a specific chat room within a group.</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> Channel {
+    groupId: <span class="hljs-built_in">number</span>;
+    id: <span class="hljs-built_in">number</span>;
+    name: <span class="hljs-built_in">string</span>;
+    messages: Message[];
+    allowedUsers: <span class="hljs-built_in">string</span>[];
+}
+</div></code></pre>
+<p>The <code>Message</code> model represents a single chat message within a channel (It stores the group Id and channel Id it is within for easy access to its group or channel data).</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> Message {
+    username: <span class="hljs-built_in">string</span>;
+    profilePicture: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    message: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    image: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    groupId: <span class="hljs-built_in">number</span>;
+    channelId: <span class="hljs-built_in">number</span>;
+}
+</div></code></pre>
+<p>The <code>Request</code> model represents a user with the role 'User' that has requested to join a group.</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> Request {
+    username: <span class="hljs-built_in">string</span>;
+    profilePicture: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    groupId: <span class="hljs-built_in">number</span>;
+    group: <span class="hljs-built_in">string</span>;
+}
+</div></code></pre>
+<p>The <code>Report</code> model represents a report filed by a Group Admin on User within a specific group.</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> Report {
+    usernameReported: <span class="hljs-built_in">string</span>;
+    userProfilePicture: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    adminReport: <span class="hljs-built_in">string</span>;
+    adminProfilePicture: <span class="hljs-built_in">string</span> | <span class="hljs-literal">null</span>;
+    groupId: <span class="hljs-built_in">number</span>;
+}
+</div></code></pre>
+<p>The <code>State</code> model represents the current group and channel that the user is accessing at the moment and what is being displayed on their screen. An object of this model is then stored in the browser's local storage.</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> State {
+    currentGroup: Group | <span class="hljs-literal">null</span>;
+    currentChannel: Channel | <span class="hljs-literal">null</span>;
+}
+</div></code></pre>
+<hr>
+<h2 id="angular-architecture">Angular Architecture</h2>
+<h3 id="components">Components</h3>
+<p>The frontend is constructed with a component-based architecture where each component is responsible for a specific view which fufills user requirements for the project.</p>
+<ul>
+<li><code>Home.component</code>: Displays a home page for users who have not logged in to gain information about the web application.</li>
+<li><code>Groups.component</code>: Displays all the groups that logged-in user have access to and also displays all the groups that are within the database for the user to request access to if they do not have access to it currently. Additionally, administrative lists for requests to groups and reports for users are shown for users with the respective roles and permissions.</li>
+<li><code>Channel.component</code>: Displays all the channels that the user has access to within the user specified group. For admin users, it also displays the list of users within group and provides them the functionality to add/report/ban/delete users to the given group and to add/remove users from specified channels within the group.</li>
+<li><code>Message.component</code>: Displays a text chat for the user given their current group and channel that they have specified. This text chat allows them to send text messages and images and loads the previous messages of the given channel and group. It also includes a video chat button which allows user to enter a video chat with other users within the same group and channel. This will allow the user to call another user who is active in the video chat.</li>
+<li><code>Login.component</code>: Displays a form that allows users to enter their user credentials which include their email, username and password to access the web application.</li>
+<li><code>Register.component</code>: Displays a form that only allows users with the role 'SuperAdmin' to create a new user given an email, username and password.</li>
+<li><code>Account.component</code>: Displays the user's current credentials such as email, username, profile picture and the groups that they are within. It also provides them the functionality to logout, delete their account and create new accounts (redirect to the register component) if the user is a 'SuperAdmin'.</li>
+<li><code>App.component</code>: Displays the NavBar at the top of all component pages with a logo. It contains links to the home page, groups page and account page.</li>
+</ul>
+<h3 id="services">Services</h3>
+<p>Services are used to handle shared logic, data manipulation and communication with the backend Node.js and Express.js server (APIs).</p>
+<ul>
+<li><code>AuthenticationService</code>: Manages user login, creation, logout, account deletion, updating and fetching a user's information. It is also responsible for storing and retrieving user credentials from the browsers local storage.</li>
+<li><code>GroupService</code>: Manages all group, channel and message related operations. It is responsible for fetching, creating, deleting, managing user memberships within groups/channels/messages and stores and retrieves the current state (current group and current channel that the user is attempting access) of the web application from the browser's local storage.</li>
+<li><code>SocketService</code>: Manages the socket connection for a user, allowing them to send/receive messages and join a video chat room.</li>
+<li><code>VideoChatService</code>: Manages the local video and audio stream of the user and the remote video and audio stream of another user within a video chat utilising PeerJS.</li>
+<li><code>NotificationService</code>: Provides a method to display notifications of success and error messages to the user across the web application.</li>
+</ul>
+<hr>
+<h2 id="nodejs-server-architecture">Node.js Server Architecture</h2>
+<p>The server is built utilising Node.js and Express.js frameworks and connected to a MongoDB database. All the application data is stored within a single MongoDB document to simplify data management. Initially, when the server is run with <code>node server.js</code>, it checks if the MongoDB <code>'db'</code> database is empty. If it is then the <code>seed.js</code> file is run and the base data.json document is loaded into the MongoDB <code>'db'</code> database and the <code>'db'</code> collection.
+<br>
+Seed Base Data .json Document:</p>
+<pre class="hljs"><code><div>{
+  &quot;groups&quot;: [
+    {
+      &quot;id&quot;: 0,
+      &quot;name&quot;: &quot;Initial Group&quot;,
+      &quot;users&quot;: [
+        {
+          &quot;username&quot;: &quot;super&quot;,
+          &quot;profilePicture&quot;: null,
+          &quot;role&quot;: &quot;SuperAdmin&quot;
+        }
+      ],
+      &quot;channels&quot;: [
+        {
+          &quot;groupId&quot;: 0,
+          &quot;id&quot;: 0,
+          &quot;name&quot;: &quot;Initial Channel&quot;,
+          &quot;messages&quot;: [
+            {
+              &quot;username&quot;: &quot;super&quot;,
+              &quot;profilePicture&quot;: null,
+              &quot;message&quot;: &quot;First message&quot;,
+              &quot;image&quot;: null,
+              &quot;groupId&quot;: 0,
+              &quot;channelId&quot;: 0
+            }
+          ],
+          &quot;allowedUsers&quot;: []
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: 1,
+      &quot;name&quot;: &quot;noadmin&quot;,
+      &quot;users&quot;: [
+        {
+          &quot;username&quot;: &quot;super&quot;,
+          &quot;profilePicture&quot;: null,
+          &quot;role&quot;: &quot;SuperAdmin&quot;
+        }
+      ],
+      &quot;channels&quot;: [
+        {
+          &quot;groupId&quot;: 1,
+          &quot;id&quot;: 0,
+          &quot;name&quot;: &quot;Initial Channel&quot;,
+          &quot;messages&quot;: [
+            {
+              &quot;username&quot;: &quot;super&quot;,
+              &quot;profilePicture&quot;: null,
+              &quot;message&quot;: &quot;First message&quot;,
+              &quot;image&quot;: null,
+              &quot;groupId&quot;: 1,
+              &quot;channelId&quot;: 0
+            }
+          ],
+          &quot;allowedUsers&quot;: []
+        }
+      ]
+    }
+  ],
+  &quot;users&quot;: [
+    {
+      &quot;id&quot;: 0,
+      &quot;username&quot;: &quot;super&quot;,
+      &quot;email&quot;: &quot;super@email.com&quot;,
+      &quot;profilePicture&quot;: null,
+      &quot;roles&quot;: [
+        &quot;SuperAdmin&quot;
+      ],
+      &quot;password&quot;: &quot;123&quot;,
+      &quot;groups&quot;: [
+        {
+          &quot;id&quot;: 0,
+          &quot;name&quot;: &quot;Initial Group&quot;,
+          &quot;users&quot;: [
+            {
+              &quot;username&quot;: &quot;super&quot;,
+              &quot;profilePicture&quot;: null,
+              &quot;role&quot;: &quot;SuperAdmin&quot;
+            }
+          ],
+          &quot;channels&quot;: [
+            {
+              &quot;groupId&quot;: 0,
+              &quot;id&quot;: 0,
+              &quot;name&quot;: &quot;Initial Channel&quot;,
+              &quot;messages&quot;: [
+                {
+                  &quot;username&quot;: &quot;super&quot;,
+                  &quot;profilePicture&quot;: null,
+                  &quot;message&quot;: &quot;First message&quot;,
+                  &quot;image&quot;: null,
+                  &quot;groupId&quot;: 0,
+                  &quot;channelId&quot;: 0
+                }
+              ],
+              &quot;allowedUsers&quot;: []
+            }
+          ]
+        },
+        {
+          &quot;id&quot;: 1,
+          &quot;name&quot;: &quot;noadmin&quot;,
+          &quot;users&quot;: [
+            {
+              &quot;username&quot;: &quot;super&quot;,
+              &quot;profilePicture&quot;: null,
+              &quot;role&quot;: &quot;SuperAdmin&quot;
+            }
+          ],
+          &quot;channels&quot;: [
+            {
+              &quot;groupId&quot;: 1,
+              &quot;id&quot;: 0,
+              &quot;name&quot;: &quot;Initial Channel&quot;,
+              &quot;messages&quot;: [
+                {
+                  &quot;username&quot;: &quot;super&quot;,
+                  &quot;profilePicture&quot;: null,
+                  &quot;message&quot;: &quot;First message&quot;,
+                  &quot;image&quot;: null,
+                  &quot;groupId&quot;: 1,
+                  &quot;channelId&quot;: 0
+                }
+              ],
+              &quot;allowedUsers&quot;: []
+            }
+          ]
+        }
+      ],
+      &quot;adminGroups&quot;: [],
+      &quot;requests&quot;: [
+        {
+          &quot;username&quot;: &quot;dummy&quot;,
+          &quot;profilePicture&quot;: null,
+          &quot;groupId&quot;: 0,
+          &quot;group&quot;: &quot;Initial Group&quot;
+        }
+      ],
+      &quot;allowedChannels&quot;: [],
+      &quot;reports&quot;: []
+    },
+    {
+      &quot;id&quot;: 1,
+      &quot;username&quot;: &quot;dummy&quot;,
+      &quot;email&quot;: &quot;dummy@email.com&quot;,
+      &quot;profilePicture&quot;: null,
+      &quot;roles&quot;: [
+        &quot;User&quot;
+      ],
+      &quot;password&quot;: &quot;123&quot;,
+      &quot;groups&quot;: [],
+      &quot;adminGroups&quot;: [],
+      &quot;requests&quot;: [],
+      &quot;allowedChannels&quot;: [],
+      &quot;reports&quot;: []
+    }
+  ]
+}
+</div></code></pre>
+<h3 id="architecture-overview">Architecture Overview</h3>
+<ul>
+<li><code>Server.js</code>: The main entry point of the server. It sets up the Express application and configures middleware such as cors and Express.json to injest <code>.json</code> files and more importantly defines the API routes and functionalities.</li>
+<li><code>Database.js</code>: A module that that defines and contains the logic to connecting to the MongoDB database. It exports a function that the route handlers use to get a database instance.</li>
+<li><code>Socket.js</code>: A module that defines the socket rooms that users can enter or leave. It handles emitting messages, joining channels and video chat rooms. It exports a function that the server can use with the specified port and input and output defined by <code>sockets.io</code>.</li>
+<li><code>Seed.js</code>: A module that inserts the seed data into the MongoDB database if it is currently empty.</li>
+<li><code>/api</code> directory: Contains individual Javascript files for each API route handler for logging in, creating a new user, deleting a user, adding a user to a group, creating a group, getting user information, making a request to enter a group, reporting another user and more. E.g. <code>login.js</code>, <code>createUser.js</code>.</li>
+<li><code>/integrationTest</code> directory: Contains a <code>test.js</code> file that contains all the integration tests that test the routes and server logic.</li>
+</ul>
+<h3 id="server-api-routes-rest-api">Server API Routes (REST API)</h3>
+<p>The following table possesses the information of the REST API endpoints that the Angular frontend utilises to communicate with the Node.js server.
+<br><br>
+<strong>Authentication and Users API Endpoints:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Route</th>
+<th>Description</th>
+<th>Request Body/Params</th>
+<th>Success Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td>/api/register</td>
+<td>Creates a new user account if the username/email is not taken.</td>
+<td>{ username, email, password }</td>
+<td>200 OK with { user: SessionStorageUser, valid: true }</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/api/login</td>
+<td>Authenticates a user.</td>
+<td>{ username, password }</td>
+<td>200 OK with { user, valid: true }</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/api/getAllUsers</td>
+<td>Retrieves a list of all users, without their passwords.</td>
+<td>None</td>
+<td>200 OK with { users: SessionStorageUser[], valid: true }</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/api/getUserInfo</td>
+<td>Retrieves full, updated information for a single user.</td>
+<td>Query Param: { username }</td>
+<td>200 OK with { user, valid: true }</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td>/api/updateUser/profilePicture</td>
+<td>Updates a user's profile picture throughout the database.</td>
+<td>{ currentUsername, profilePicture }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td>/api/updateUser/username</td>
+<td>Updates a user's username.</td>
+<td>{ currentUsername, username }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td>/api/updateUser/email</td>
+<td>Updates a user's email.</td>
+<td>{ currentUsername, email }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td>/api/updateUser/password</td>
+<td>Updates a user's password.</td>
+<td>{ currentUsername, password }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td>/api/updateUser/groups</td>
+<td>Updates a user's groups.</td>
+<td>{ currentUsername, groups }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td>/api/updateUser/adminGroups</td>
+<td>Updates a user's admin groups.</td>
+<td>{ currentUsername, adminGroups }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>/api/deleteAccount</td>
+<td>Deletes a user account and associated data.</td>
+<td>Query Param: { id }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+</tbody>
+</table>
+<p><br><br>
+<strong>Groups API Endpoints:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Route</th>
+<th>Description</th>
+<th>Request Body/Params</th>
+<th>Success Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>/api/get/group</td>
+<td>Retrieves information for a single group.</td>
+<td>Query Param: { id }</td>
+<td>200 OK with { group, valid: true }</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>/api/get/allGroups</td>
+<td>Retrieves all groups.</td>
+<td>None</td>
+<td>200 OK with { groups, valid: true }</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/api/createGroup</td>
+<td>Creates a new group, adding creator as GroupAdmin and all SuperAdmins.</td>
+<td>{ name, username, role }</td>
+<td>200 OK with { group, valid: true }</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>/api/removeGroup</td>
+<td>Deletes a group and all references to it.</td>
+<td>Query Param: { id }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/api/requestGroup</td>
+<td>Adds a join request to relevant admins' request lists.</td>
+<td>Request object</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>/api/rejectRequest</td>
+<td>Rejects/cancels a group join request.</td>
+<td>Query Param: { request } (username, groupId, group)</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/api/acceptRequest</td>
+<td>Accepts a group join request.</td>
+<td>Request object</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/api/addNewUser</td>
+<td>Accepts or manually adds a user to a group, removing any requests.</td>
+<td>{ groupId, user }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>/api/removeUserFromGroup</td>
+<td>Removes a user from a group and cleans up data.</td>
+<td>Query Param: { user, groupId }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/api/promoteUser</td>
+<td>Promotes a user to a new role, incl. &quot;SuperAdmin&quot; logic.</td>
+<td>{ username, groupId, role }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+</tbody>
+</table>
+<p><br><br>
+<strong>Channels API Endpoints:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Route</th>
+<th>Description</th>
+<th>Request Body/Params</th>
+<th>Success Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td>/api/createChannel</td>
+<td>Creates a new channel and syncs the updated group to members.</td>
+<td>{ channelName, groupId }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>/api/removeChannel</td>
+<td>Deletes a channel and syncs the updated group to members.</td>
+<td>Query Param: { request } (groupId, channelId)</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/api/banUserFromChannel</td>
+<td>Removes a user's access to a specific channel.</td>
+<td>{ groupId, id, name, username }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/api/addUserToChannel</td>
+<td>Grants a user access to a specific channel.</td>
+<td>{ groupId, channelId, name, username, channelObject }</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+</tbody>
+</table>
+<p><br><br>
+<strong>Reports API Endpoints: </strong></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Route</th>
+<th>Description</th>
+<th>Request Body/Params</th>
+<th>Success Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td>/api/reportUser</td>
+<td>Adds a report to the reports list of all SuperAdmins.</td>
+<td>Report object</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>/api/acceptReport</td>
+<td>Bans a user from a group and cleans up related data.</td>
+<td>Report object</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+</tbody>
+</table>
+<p><br><br>
+<strong>Messages API Endpoints:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Route</th>
+<th>Description</th>
+<th>Request Body/Params</th>
+<th>Success Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST</td>
+<td>/api/sendMessage</td>
+<td>Adds a message to the messages array of a specified channel within a specified group</td>
+<td>Message object</td>
+<td>200 OK with { valid: true }</td>
+</tr>
+</tbody>
+</table>
+<h2 id="client-server-interaction">Client-Server Interaction</h2>
+<p><small><small>Note: Not all interaction flows will be documented as there are too many and only the main interaction flows will be described</small></small> <br></br>
+<strong>User Login Attempt</strong></p>
+<ol>
+<li>
+<p>Client (Admin's Browser): A user is within the login form page and enters their email/username and password and selects the <code>Login</code> button.</p>
+</li>
+<li>
+<p>Angular Component: The (click) event triggers the login() method in login.component.ts. This method gets the <code>LoginAttempt</code> object which contains the user's email/username and password from the login request.</p>
+</li>
+<li>
+<p>Angular Service: The component calls the AuthenticationService.login(user) method. The service packages the <code>LoginAttempt</code>object containing the user's credentials into a JSON payload.</p>
+</li>
+<li>
+<p>HTTP Request: The service sends a HTTP POST request to the /api/login endpoint on the Node.js server.</p>
+</li>
+<li>
+<p>Node.js Server: The route handler for /api/login receives the request.</p>
+<ul>
+<li>
+<p>It finds the users array and checks if a user exists with the same email/username and password.</p>
+</li>
+<li>
+<p>If the user exists, then it sends back a 200 OK response with { user: SessionStorageUser, valid: true, error: &quot;&quot; }. Where the user variable contains all the user's information other than the password.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Client Response: The Angular AuthenticationService receives the success response. The local storage <code>Credentials</code> is set with the user's details and the login component then calls upon the router to navigate to the account component. However, if the response is a failure, then the login component initialises the error message from the received response and the notification service is called to notify the user for the error.</p>
+</li>
+</ol>
+<p><strong>New User Registration</strong></p>
+<ol>
+<li>
+<p>Client (Angular): A &quot;SuperAdmin&quot; user clicks the &quot;Create New User&quot; button on the account page and fills out the registration form which includes the new user's username, email and password in the register component and clicks the &quot;Create New User&quot; button.</p>
+</li>
+<li>
+<p>Service: The AuthenticationService packages the username, email, and password into a JSON payload.</p>
+</li>
+<li>
+<p>HTTP Request: The service sends a POST request to the /api/register endpoint on the Node.js server.</p>
+</li>
+<li>
+<p>Server (Node.js): The route handler for /api/register receives the request.</p>
+</li>
+<li>
+<p>It first queries the database to ensure the submitted username or email doesn't already exist.</p>
+<ul>
+<li>
+<p>If they are unique, it generates a new user ID, creates the new user object with the default role of &quot;User&quot;, and pushes it into the main users array in the database.</p>
+</li>
+<li>
+<p>HTTP Response: The server returns a 200 OK response with the new user object but without the password and a valid: true flag.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Client Update: The AuthenticationService receives the success response, and the Notification Service will display a success message indicating that the new user has been created and the &quot;SuperAdmin&quot; user will return back to the account compononet page.</p>
+</li>
+</ol>
+<p><strong>Adding a User to a Group</strong></p>
+<ol>
+<li>
+<p>Client (Admin's Browser): An admin views the pending requests in the GroupsComponent. They click the &quot;Review
+button and then the &quot;Accept&quot; button next within the request popup.</p>
+</li>
+<li>
+<p>Angular Component: The (click) event triggers the acceptRequest() method in groups.component.ts. This method gets the user object from the request.</p>
+</li>
+<li>
+<p>Angular Service: The component calls the groupService.addNewUser(groupId, user) method. The service packages the groupId and user object into a JSON payload.</p>
+</li>
+<li>
+<p>HTTP Request: The service sends a HTTP POST request to the /api/acceptRequest endpoint on the Node.js server.</p>
+</li>
+<li>
+<p>Node.js Server: The route handler for /api/acceptRequest receives the request.</p>
+<ul>
+<li>
+<p>It finds the target group and checks that the user isn't already a member.</p>
+</li>
+<li>
+<p>It performs several database updates in parallel:</p>
+<ul>
+<li>
+<p>Adds the user to the main group's users array.</p>
+</li>
+<li>
+<p>Adds the group to the user's groups array with <code>'User'</code> role.</p>
+</li>
+<li>
+<p>Removes the pending request from all admins' requests arrays.</p>
+</li>
+<li>
+<p>It then propagates the updated group to all other members' groups and adminGroups arrays to ensure data consistency.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Finally, it sends back a 200 OK response with { valid: true, error: &quot;&quot; }.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Client Response: The Angular GroupService receives the success response. The GroupsComponent then calls its reloadComponent() method, which refreshes the view to reflect the changes where the request disappears from the list</p>
+</li>
+</ol>
+<p><strong>OR</strong></p>
+<ol>
+<li>
+<p>Client (Admin's Browser): An admin selects the &quot;Add User&quot; button within the channels component within a selected group. They then select the user they want to add to the group within the new popup and click the &quot;Add&quot; button.</p>
+</li>
+<li>
+<p>The same process is performed like when accepting a request.</p>
+</li>
+<li>
+<p>However, Client Response: The Angular GroupService receives the success response. The Channels component then calls its reloadComponent() method, which refreshes the view to reflect the newly added user to the given group.</p>
+</li>
+</ol>
+<p><strong>Deleting a Group</strong></p>
+<ol>
+<li>
+<p>Client (Angular): An administrator clicks the &quot;Remove&quot; button next to a group they manage in the GroupsComponent.</p>
+</li>
+<li>
+<p>Service: The GroupService's removeGroup method is called.</p>
+</li>
+<li>
+<p>HTTP Request: The service sends a DELETE request to the /api/removeGroup endpoint with the id of the group as a query parameter.</p>
+</li>
+<li>
+<p>Server (Node.js): The route handler for /api/removeGroup receives the request.</p>
+</li>
+<li>
+<p>It executes a bulkWrite operation to perform a comprehensive and atomic cleanup across the entire database document.</p>
+<ul>
+<li>
+<p>It begins by removing the group from the groups list and removes all references to that given group from every user's groups and adminGroups, requests and reports array,</p>
+</li>
+<li>
+<p>HTTP Response: The server returns a 200 OK response with { valid: true } upon successful deletion.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Client Update: The GroupsComponent reloads, and the deleted group is completely removed from all lists in the UI and the notification service is called display a success message that the group was successfully deleted.</p>
+</li>
+</ol>
+<p><strong>Requesting to Join a Group &amp; Admin Approval</strong></p>
+<ol>
+<li>
+<p>Client (Angular): A user in the GroupsComponent clicks the &quot;Request Group&quot; button next to a group they are not a member of within the all Groups list of groups.</p>
+</li>
+<li>
+<p>Service: The GroupService's requestGroup method is called, which packages the user's details and the target groupId into a <code>Request</code> object.</p>
+</li>
+<li>
+<p>HTTP Request: The service sends a POST request to /api/requestGroup. The server then adds this request to the requests array of all relevant administrators.</p>
+</li>
+<li>
+<p>Server (Node.js): The /api/requestGroup handler receives the <code>Request</code> object.</p>
+<ul>
+<li>
+<p>It verifies the user is not already in the group.</p>
+</li>
+<li>
+<p>It adds the <code>Request</code> object to all users' requests array with the <code>'SuperAdmin'</code> role or if they are a <code>'GroupAdmin'</code> of the given group.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Admin Action: An administrator sees the pending request in their GroupsComponent and clicks the &quot;Accept&quot; button inside the review modal. This triggers the addNewUser method in the GroupService.</p>
+</li>
+<li>
+<p>Server (Node.js): The /api/addNewUser handler receives the groupId and user object.</p>
+<ul>
+<li>
+<p>It verifies the user is not already in the group.</p>
+</li>
+<li>
+<p>It adds the user to the group's main users list and adds the group to the user's personal groups list.</p>
+</li>
+<li>
+<p>Crucially, it removes the now-obsolete request from all admins' requests arrays.</p>
+</li>
+<li>
+<p>It then propagates the updated group object (which now includes the new member) to all other users.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Client Update: The GroupsComponent reloads. The pending request disappears from the admin's view, and the user will now see the group in their &quot;My Groups&quot; list upon their next refresh and will be allowed to enter the group as a <code>'User'</code>.</p>
+</li>
+</ol>
+<p><strong>Promoting a User's Role</strong></p>
+<ol>
+<li>
+<p>Client (Angular): A Super Admin, from a modal in the ChannelComponent, selects a user, chooses the &quot;GroupAdmin&quot; or &quot;SuperAdmin&quot; role from a dropdown, and clicks the &quot;Promote&quot; button.</p>
+</li>
+<li>
+<p>Service: The GroupService's promoteUser method is called. It packages the username, target groupId, and the new role (&quot;GroupAdmin&quot; or &quot;SuperAdmin&quot;) into a JSON payload.</p>
+</li>
+<li>
+<p>HTTP Request: The service sends a POST request to the /api/promoteUser endpoint.</p>
+</li>
+<li>
+<p>Server (Node.js): The route handler enters its standard role promotion logic.</p>
+</li>
+<li>
+<p>It performs three database updates in parallel:</p>
+<ul>
+<li>
+<p>Adds the new role to the user's main roles array.</p>
+</li>
+<li>
+<p>Updates the user's role to &quot;GroupAdmin&quot; or &quot;SuperAdmin&quot; specifically within the target group's users array.</p>
+</li>
+<li>
+<p>Adds the entire group object to the user's adminGroups array, granting them administrative permissions.</p>
+</li>
+<li>
+<p>Then it updates all the groups within all user's groups and adminGroups arrays to ensure data consistency.</p>
+</li>
+<li>
+<p>HTTP Response: The server returns a 200 OK response with { valid: true }.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Client Update: The ChannelComponent reloads. In the list of group members, the promoted user's role badge is updated to &quot;GroupAdmin&quot; or &quot;SuperAdmin&quot; if selected.</p>
+</li>
+</ol>
+<p><strong>Entering a Video Chat</strong></p>
+<ol>
+<li>
+<p>Client (Angular): A user, selects a group and then selects a channel to enter messages component. Then they select the &quot;Enter Video Chat&quot; button and it opens up a modal that displays their current camera display and a list of users within the same channel that are currently connected to &quot;call&quot;. They select the &quot;call&quot; button for a specified connected user.</p>
+</li>
+<li>
+<p>Service:</p>
+<ul>
+<li>The <code>VideoChatService</code> handles the &quot;call&quot; request and gets the incoming remote video and audio stream from the <code>join-video-chat</code> socket room given the remotePeerId.</li>
+<li>Then it accepts the incoming remote video and audio using PeerJS and then sets up a subscriber for its observers to reflect the changes.</li>
+<li>Lastly it exposes the video and audio observers to the <code>Messages</code> component.</li>
+</ul>
+</li>
+<li>
+<p>Client Update: The Message Component displays the live remote video and audio stream changes from the exposed observers from the <code>VideoChatService</code>.</p>
+</li>
+</ol>
+<br>
+<h2 id="testing-and-coverage">Testing and Coverage</h2>
+<h3 id="frontend-angular">Frontend (Angular)</h3>
+<p><strong>Testing Frameworks</strong></p>
+<ul>
+<li>Karma and Jasmine for unit tests</li>
+<li>Angular TestBed for component/service testing</li>
+<li>HTTP mock calls were made utilising <code>HTTPTestingController</code></li>
+</ul>
+<p><strong>What was Tested</strong></p>
+<p>Services:</p>
+<ul>
+<li><code>AuthenticationService</code></li>
+<li><code>GroupService</code></li>
+<li><code>VideoChatService</code></li>
+</ul>
+<p>Components:</p>
+<ul>
+<li><code>Messages</code></li>
+<li><code>Login</code></li>
+<li><code>Groups</code></li>
+<li><code>Channel</code></li>
+<li><code>Account</code></li>
+</ul>
+<p><strong>Coverage</strong><br>
+<small>Using the command: <code>ng test --code-coverage</code></small><br>
+<img src="./text-chat/public/images/Frontend Tests.png"></p>
+<h3 id="backend-nodejsexpress">Backend (Node.js/Express)</h3>
+<p><strong>Testing Frameworks</strong></p>
+<ul>
+<li>Cypress</li>
+</ul>
+<p><strong>What was Tested</strong></p>
+<ul>
+<li>User registration and login, getting user information, updating user information and deleting a user's account</li>
+<li>Group creation/deletion, getting all the groups in the database, getting a groups information and adding/removing a user from a group</li>
+<li>Request creation/rejection/acceptance</li>
+<li>Channel creation/deletion, banning a user from a channel and adding a user to a channel</li>
+</ul>
+<p><strong>Coverage</strong><br>
+<small>Using the command: <code>npm run coverage</code></small><br>
+<img src="./text-chat/public/images/Backend Tests.png"></p>
+
+</body>
+</html>
